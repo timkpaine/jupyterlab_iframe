@@ -28,10 +28,37 @@ class IFrameWidget extends Widget {
     super();
     let div = document.createElement('div');
     div.classList.add('iframe-widget');
+    let iframe = document.createElement('iframe');
+    iframe.src = path;
+    div.appendChild(iframe);
     this.node.appendChild(div);
   }
 };
 
+class OpenIFrameWidget extends Widget {
+  constructor() {
+    let body = document.createElement('div');
+    let existingLabel = document.createElement('label');
+    existingLabel.textContent = 'Site:';
+
+    let input = document.createElement('input');
+    input.value = '';
+    input.placeholder = 'www.google.com';
+
+    body.appendChild(existingLabel);
+    body.appendChild(input);
+
+    super({ node: body });
+  }
+
+  getValue(): string {
+    return this.inputNode.value;
+  }
+
+  get inputNode(): HTMLInputElement {
+    return this.node.getElementsByTagName('input')[0] as HTMLInputElement;
+  }
+}
 
 function activate(app: JupyterLab, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
   console.log('JupyterLab extension knowledgelab is activated!');
@@ -51,8 +78,9 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
       if (path === '') {
         showDialog({
           title: 'Open site',
+          body: new OpenIFrameWidget(),
           focusNodeSelector: 'input',
-          buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'path' })]
+          buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'GO' })]
         }).then(result => {
           if (!result.value) {
             return null;

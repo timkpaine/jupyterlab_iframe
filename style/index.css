@@ -1,3 +1,9 @@
-.iframe-widget {
+div.iframe-widget {
+    height:100%;
+    width:80%;
+}
 
+div.iframe-widget iframe{
+    height:100%;
+    width:100%;
 }
