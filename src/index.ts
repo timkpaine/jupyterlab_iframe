@@ -48,7 +48,7 @@ class OpenIFrameWidget extends Widget {
 
     let input = document.createElement('input');
     input.value = '';
-    input.placeholder = 'www.google.com';
+    input.placeholder = 'https://tim.paine.nyc';
 
     body.appendChild(existingLabel);
     body.appendChild(input);
