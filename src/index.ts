@@ -30,9 +30,12 @@ class IFrameWidget extends Widget {
     div.classList.add('iframe-widget');
     let iframe = document.createElement('iframe');
     iframe.src = path;
+    this.iframe = iframe;
     div.appendChild(iframe);
     this.node.appendChild(div);
   }
+
+  iframe: HTMLIFrameElement;
 };
 
 class OpenIFrameWidget extends Widget {
@@ -86,12 +89,18 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
             return null;
           }
           path = <string>result.value;
-          widget = new IFrameWidget(path);
+          if (!widget){
+            widget = new IFrameWidget(path);
+          }
+          widget.iframe.src = path;
           app.shell.addToMainArea(widget);
           app.shell.activateById(widget.id);
         });
       } else {
-        widget = new IFrameWidget(path);
+        if (!widget){
+          widget = new IFrameWidget(path);
+        }
+        widget.iframe.src = path;
         app.shell.addToMainArea(widget);
         app.shell.activateById(widget.id);
       }
