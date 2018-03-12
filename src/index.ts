@@ -34,13 +34,10 @@ class IFrameWidget extends Widget {
     iframe.setAttribute('baseURI', '');
     iframe.src = path;
 
-    this.iframe = iframe;
-
     div.appendChild(iframe);
     this.node.appendChild(div);
   }
 
-  iframe: HTMLIFrameElement;
 };
 
 class OpenIFrameWidget extends Widget {
@@ -94,18 +91,12 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
             return null;
           }
           path = <string>result.value;
-          if (!widget){
-            widget = new IFrameWidget(path);
-          }
-          widget.iframe.src = path;
+          widget = new IFrameWidget(path);
           app.shell.addToMainArea(widget);
           app.shell.activateById(widget.id);
         });
       } else {
-        if (!widget){
-          widget = new IFrameWidget(path);
-        }
-        widget.iframe.src = path;
+        widget = new IFrameWidget(path);
         app.shell.addToMainArea(widget);
         app.shell.activateById(widget.id);
       }
