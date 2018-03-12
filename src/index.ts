@@ -26,11 +26,16 @@ const extension: JupyterLabPlugin<void> = {
 class IFrameWidget extends Widget {
   constructor(path: string) {
     super();
+    this.id = path;
+
     let div = document.createElement('div');
     div.classList.add('iframe-widget');
     let iframe = document.createElement('iframe');
+    iframe.setAttribute('baseURI', '');
     iframe.src = path;
+
     this.iframe = iframe;
+
     div.appendChild(iframe);
     this.node.appendChild(div);
   }
