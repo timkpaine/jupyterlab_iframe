@@ -27,6 +27,8 @@ class IFrameWidget extends Widget {
   constructor(path: string) {
     super();
     this.id = path;
+    this.title.label = path;
+    this.title.closable = true;
 
     let div = document.createElement('div');
     div.classList.add('iframe-widget');
