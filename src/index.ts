@@ -105,6 +105,36 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
 
   // Add the command to the palette.
   palette.addItem({command: open_command, category: 'Tools'});
+
+  // grab sites from serverextension
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/iframes", true);
+  xhr.onload = function (e:any) {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        let sites = JSON.parse(xhr.responseText);
+        for(let site of sites){
+          console.log(site);
+          let command = 'iframe:open-' + site;
+          app.commands.addCommand(command, {
+            label: 'Open ' + site,
+            isEnabled: () => true,
+            execute: () => {
+                widget = new IFrameWidget(site);
+                app.shell.addToMainArea(widget);
+                app.shell.activateById(widget.id);
+            }
+          });
+        }
+      } else {
+        console.error(xhr.statusText);
+      }
+    }
+  }.bind(this);
+  xhr.onerror = function (e) {
+    console.error(xhr.statusText);
+  };
+  xhr.send(null);
 };
 
 

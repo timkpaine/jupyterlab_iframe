@@ -1,3 +1,4 @@
+import ujson
 from notebook.base.handlers import IPythonHandler
 
 
@@ -6,7 +7,7 @@ class IFrameHandler(IPythonHandler):
         self.iframes = iframes
 
     def get(self):
-        self.finish(self.iframes)
+        self.finish(ujson.dumps(self.iframes))
 
 
 def load_jupyter_server_extension(nb_server_app):
