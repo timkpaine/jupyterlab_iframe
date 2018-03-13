@@ -104,7 +104,7 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
   });
 
   // Add the command to the palette.
-  palette.addItem({command: open_command, category: 'Tools'});
+  palette.addItem({command: open_command, category: 'Sites'});
 
   // grab sites from serverextension
   var xhr = new XMLHttpRequest();
@@ -114,7 +114,7 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
       if (xhr.status === 200) {
         let sites = JSON.parse(xhr.responseText);
         for(let site of sites){
-          console.log(site);
+          console.log('adding quicklink for ' + site);
           let command = 'iframe:open-' + site;
           app.commands.addCommand(command, {
             label: 'Open ' + site,
@@ -125,6 +125,7 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
                 app.shell.activateById(widget.id);
             }
           });
+          palette.addItem({command: command, category: 'Sites'});
         }
       } else {
         console.error(xhr.statusText);
@@ -135,6 +136,8 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
     console.error(xhr.statusText);
   };
   xhr.send(null);
+
+  console.log('JupyterLab extension jupyterlab_iframe is activated!');
 };
 
 
