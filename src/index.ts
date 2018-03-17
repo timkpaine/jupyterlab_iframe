@@ -68,7 +68,6 @@ class OpenIFrameWidget extends Widget {
 }
 
 function activate(app: JupyterLab, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
-  console.log('JupyterLab extension knowledgelab is activated!');
 
   // Declare a widget variable
   let widget: IFrameWidget;
