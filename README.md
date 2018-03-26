@@ -1,5 +1,7 @@
 # jupyterlab_iframe
 Open a site in a widget, or add a set of "quicklinks".
+[![PyPI](https://img.shields.io/pypi/v/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
+[![PyPI](https://img.shields.io/pypi/l/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
 
 ![](https://raw.githubusercontent.com/timkpaine/jupyterlab_iframe/master/docs/example1.gif)
 
