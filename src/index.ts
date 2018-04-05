@@ -88,6 +88,10 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
           focusNodeSelector: 'input',
           buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'GO' })]
         }).then(result => {
+          if (result.button.label !== 'GO') {
+            return;
+          }
+
           if (!result.value) {
             return null;
           }
