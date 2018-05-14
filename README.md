@@ -19,4 +19,5 @@ install the server extension, and add the following to `jupyter_notebook_config.
 
 ```python3
 c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
+c.JupyterLabIFrame.welcome = 'a site'
 ```

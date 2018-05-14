@@ -67,6 +67,22 @@ class OpenIFrameWidget extends Widget {
   }
 }
 
+function registerSite(app: JupyterLab, palette: ICommandPalette, site: string){
+  let command = 'iframe:open-' + site;
+
+  app.commands.addCommand(command, {
+    label: 'Open ' + site,
+    isEnabled: () => true,
+    execute: () => {
+        let widget = new IFrameWidget(site);
+        app.shell.addToMainArea(widget);
+        app.shell.activateById(widget.id);
+    }
+  });
+  palette.addItem({command: command, category: 'Sites'});
+}
+
+
 function activate(app: JupyterLab, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
 
   // Declare a widget variable
@@ -117,21 +133,30 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
   xhr.onload = function (e:any) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
-        let sites = JSON.parse(xhr.responseText);
+        let jsn = JSON.parse(xhr.responseText);
+        let welcome = jsn['welcome'];
+        let welcome_included = false;
+
+        let sites = jsn['sites'];
+
         for(let site of sites){
           console.log('adding quicklink for ' + site);
-          let command = 'iframe:open-' + site;
-          app.commands.addCommand(command, {
-            label: 'Open ' + site,
-            isEnabled: () => true,
-            execute: () => {
-                widget = new IFrameWidget(site);
-                app.shell.addToMainArea(widget);
-                app.shell.activateById(widget.id);
-            }
-          });
-          palette.addItem({command: command, category: 'Sites'});
+
+          if (site == welcome){
+            welcome_included = true;
+          }
+          registerSite(app, palette, site);
         }
+
+        if (!welcome_included){
+          registerSite(app, palette, welcome);
+        }
+        if (welcome) {
+          app.restored.then(() => {
+            app.commands.execute('iframe:open-' + welcome);
+          });
+        }
+
       } else {
         console.error(xhr.statusText);
       }
