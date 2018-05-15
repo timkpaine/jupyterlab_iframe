@@ -148,12 +148,18 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
           registerSite(app, palette, site);
         }
 
-        if (!welcome_included){
+        if (!welcome_included) {
           registerSite(app, palette, welcome);
         }
+
+        let started = true;
+
         if (welcome) {
-          app.restored.then(() => {
-            app.commands.execute('iframe:open-' + welcome);
+          app.restored.then((layout, start=started) => {
+            if(start){
+              app.commands.execute('iframe:open-' + welcome);
+              start = false;            
+            }
           });
         }
 
