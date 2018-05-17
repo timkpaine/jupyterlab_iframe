@@ -152,13 +152,11 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
           registerSite(app, palette, welcome);
         }
 
-        let started = true;
-
         if (welcome) {
-          app.restored.then((layout, start=started) => {
-            if(start){
+          app.restored.then(() => {
+            if(!localStorage.getItem('jupyterlab_iframe_welcome')) {
+              localStorage.setItem('jupyterlab_iframe_welcome', 'false');
               app.commands.execute('iframe:open-' + welcome);
-              start = false;            
             }
           });
         }
@@ -175,6 +173,5 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
 
   console.log('JupyterLab extension jupyterlab_iframe is activated!');
 };
-
 
 export default extension;
