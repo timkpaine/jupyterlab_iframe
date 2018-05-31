@@ -7,6 +7,10 @@ import {
 } from '@jupyterlab/apputils';
 
 import {
+  PageConfig
+} from '@jupyterlab/coreutils'
+
+import {
   IDocumentManager
 } from '@jupyterlab/docmanager';
 
@@ -129,7 +133,7 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
 
   // grab sites from serverextension
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", "/iframes", true);
+  xhr.open("GET", PageConfig.getBaseUrl() + "iframes", true);
   xhr.onload = function (e:any) {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {

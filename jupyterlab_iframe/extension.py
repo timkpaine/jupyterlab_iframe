@@ -26,7 +26,7 @@ def load_jupyter_server_extension(nb_server_app):
     host_pattern = '.*$'
     base_url = web_app.settings['base_url']
 
-    print('Installing jupyterlab_iframe handler on path %s' % '/iframes')
+    print('Installing jupyterlab_iframe handler on path %s' % url_path_join(base_url, 'iframes'))
     print('Handling iframes: %s' % sites)
 
-    web_app.add_handlers(host_pattern, [(url_path_join(base_url, '/iframes'), IFrameHandler, {'welcome': welcome, 'sites': sites})])
+    web_app.add_handlers(host_pattern, [(url_path_join(base_url, 'iframes'), IFrameHandler, {'welcome': welcome, 'sites': sites})])
