@@ -9,11 +9,11 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='jupyterlab_iframe',
-    version='0.0.5',
+    version='0.0.6',
     description='IFrame widgets for JupyterLab',
     long_description=long_description,
     url='https://github.com/timkpaine/jupyterlab_iframe',
-    download_url='https://github.com/timkpaine/jupyterlab_iframe/archive/v0.0.5.tar.gz',
+    download_url='https://github.com/timkpaine/jupyterlab_iframe/archive/v0.0.6.tar.gz',
     author='Tim Paine',
     author_email='t.paine154@gmail.com',
     license='GPL',
