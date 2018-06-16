@@ -28,6 +28,10 @@ setup(
 
     keywords='jupyter jupyterlab',
 
+    install_requires=[
+	'ujson'
+    ],
+
     packages=find_packages(exclude=['tests', ]),
     data_files=[('', ["LICENSE", "README.md"])],
     zip_safe=False,
