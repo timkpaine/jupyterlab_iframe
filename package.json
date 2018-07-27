@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab_iframe",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A JupyterLab extension.",
   "author": "Tim Paine",
   "main": "lib/index.js",
@@ -21,10 +21,10 @@
     "extension": true
   },
   "dependencies": {
-    "@jupyterlab/application": "^0.16.0",
-    "@jupyterlab/apputils": "^0.16.0",
-    "@jupyterlab/coreutils": "^1.0.2",
-    "@jupyterlab/docmanager": "^0.16.0",
+    "@jupyterlab/application": "^0.17.0",
+    "@jupyterlab/apputils": "^0.17.0",
+    "@jupyterlab/coreutils": "^2.0.0",
+    "@jupyterlab/docmanager": "^0.17.0",
     "@phosphor/disposable": "^1.1.2"
   },
   "devDependencies": {
