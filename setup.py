@@ -16,7 +16,7 @@ setup(
     download_url='https://github.com/timkpaine/jupyterlab_iframe/archive/v0.0.8.tar.gz',
     author='Tim Paine',
     author_email='t.paine154@gmail.com',
-    license='GPL',
+    license='Apache 2.0',
 
     classifiers=[
         'Development Status :: 3 - Alpha',
