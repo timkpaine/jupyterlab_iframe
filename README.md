@@ -1,6 +1,9 @@
 # jupyterlab_iframe
 Open a site in a widget, or add a set of "quicklinks".
 
+[![Build Status](https://travis-ci.org/timkpaine/jupyterlab_iframe.svg?branch=master)](https://travis-ci.org/timkpaine/jupyterlab_iframe)
+[![GitHub issues](https://img.shields.io/github/issues/timkpaine/jupyterlab_iframe.svg)]()
+[![codecov](https://codecov.io/gh/timkpaine/jupyterlab_iframe/branch/master/graph/badge.svg)](https://codecov.io/gh/timkpaine/jupyterlab_iframe)
 [![PyPI](https://img.shields.io/pypi/l/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
 [![npm](https://img.shields.io/npm/v/jupyterlab_iframe.svg)](https://www.npmjs.com/package/jupyterlab_iframe)
