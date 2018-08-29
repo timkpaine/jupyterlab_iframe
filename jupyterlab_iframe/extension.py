@@ -1,4 +1,4 @@
-import ujson
+import json
 from notebook.base.handlers import IPythonHandler
 from notebook.utils import url_path_join
 
@@ -9,7 +9,7 @@ class IFrameHandler(IPythonHandler):
         self.welcome = welcome
 
     def get(self):
-        self.finish(ujson.dumps({'welcome': self.welcome or '', 'sites': self.sites}))
+        self.finish(json.dumps({'welcome': self.welcome or '', 'sites': self.sites}))
 
 
 def load_jupyter_server_extension(nb_server_app):
