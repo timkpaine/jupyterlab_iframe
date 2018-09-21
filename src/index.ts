@@ -146,14 +146,18 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
         for(let site of sites){
           console.log('adding quicklink for ' + site);
 
-          if (site == welcome){
+          if (site === welcome){
             welcome_included = true;
           }
-          registerSite(app, palette, site);
+          if (site){
+            registerSite(app, palette, site);
+          }
         }
 
         if (!welcome_included) {
-          registerSite(app, palette, welcome);
+          if (welcome !== ''){
+            registerSite(app, palette, welcome);
+          }
         }
 
         if (welcome) {
