@@ -22,10 +22,10 @@
     "extension": true
   },
   "dependencies": {
-    "@jupyterlab/application": "^0.18.0",
-    "@jupyterlab/apputils": "^0.18.0",
-    "@jupyterlab/coreutils": "^2.1.0",
-    "@jupyterlab/docmanager": "^0.18.0",
+    "@jupyterlab/application": "^0.19.0",
+    "@jupyterlab/apputils": "^0.19.0",
+    "@jupyterlab/coreutils": "^2.2.0",
+    "@jupyterlab/docmanager": "^0.19.0",
     "@phosphor/disposable": "^1.1.2"
   },
   "devDependencies": {
