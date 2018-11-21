@@ -12,7 +12,7 @@
     "build": "tsc",
     "clean": "rimraf lib",
     "prepublishOnly": "npm run build",
-    "test": "jest --coverage --collectCoverageFrom=ts/**/*.{js,jsx}",
+    "test": "jest --coverage --collectCoverageFrom=src/*.{ts}",
     "watch": "tsc -w --listEmittedFiles"
   },
   "files": [
