@@ -12,6 +12,7 @@
     "build": "tsc",
     "clean": "rimraf lib",
     "prepublishOnly": "npm run build",
+    "test": "jest",
     "watch": "tsc -w --listEmittedFiles"
   },
   "files": [
@@ -29,7 +30,10 @@
     "@phosphor/disposable": "^1.1.2"
   },
   "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "jest": "^23.6.0",
     "rimraf": "^2.6.1",
-    "typescript": "~2.6.2"
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.6"
   }
 }
