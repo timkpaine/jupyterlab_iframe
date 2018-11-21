@@ -183,3 +183,4 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
 };
 
 export default extension;
+export {activate as _activate};
