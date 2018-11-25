@@ -20,6 +20,8 @@ import {
 
 import '../style/index.css';
 
+let unique = 0;
+
 const extension: JupyterLabPlugin<void> = {
   id: 'jupyterlab_iframe',
   autoStart: true,
@@ -30,7 +32,9 @@ const extension: JupyterLabPlugin<void> = {
 class IFrameWidget extends Widget {
   constructor(path: string) {
     super();
-    this.id = path;
+    this.id = path + '-' + unique;
+    unique += 1;
+
     this.title.label = path;
     this.title.closable = true;
 
