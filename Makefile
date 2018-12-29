@@ -4,9 +4,19 @@ testjs: ## Clean and Make js tests
 testpy: ## Clean and Make unit tests
 	python3 -m nose -v tests --with-coverage --cover-erase --cover-package=`find jupyterlab_iframe -name "*.py" | sed "s=\./==g" | sed "s=/=.=g" | sed "s/\.py//g" | tr '\n' ',' | rev | cut -c2- | rev`
 	
-test: ## run the tests for travis CI
+test: lint ## run the tests for travis CI
 	@ python3 -m nose -v tests --with-coverage --cover-erase --cover-package=`find jupyterlab_iframe -name "*.py" | sed "s=\./==g" | sed "s=/=.=g" | sed "s/\.py//g" | tr '\n' ',' | rev | cut -c2- | rev`
 	npm install && npm run test
+
+lint: ## run linter
+	pylint jupyterlab_iframe || echo
+	flake8 jupyterlab_iframe 
+
+annotate: ## MyPy type annotation check
+	mypy -s jupyterlab_iframe
+
+annotate_l: ## MyPy type annotation check - count only
+	mypy -s jupyterlab_iframe | wc -l 
 
 clean: ## clean the repository
 	find . -name "__pycache__" | xargs  rm -rf 

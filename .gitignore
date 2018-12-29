@@ -165,3 +165,4 @@ ENV/
 .DS_Store
 
 keys.sh
+.autoversion
