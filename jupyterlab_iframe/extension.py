@@ -1,6 +1,7 @@
 import json
 from notebook.base.handlers import IPythonHandler
 from notebook.utils import url_path_join
+from .proxy import IFrameProxyHandler
 
 
 class IFrameHandler(IPythonHandler):
@@ -29,4 +30,5 @@ def load_jupyter_server_extension(nb_server_app):
     print('Installing jupyterlab_iframe handler on path %s' % url_path_join(base_url, 'iframes'))
     print('Handling iframes: %s' % sites)
 
-    web_app.add_handlers(host_pattern, [(url_path_join(base_url, 'iframes'), IFrameHandler, {'welcome': welcome, 'sites': sites})])
+    web_app.add_handlers(host_pattern, [(url_path_join(base_url, 'iframes'), IFrameHandler, {'welcome': welcome, 'sites': sites}),
+                                        (url_path_join(base_url, 'iframes/proxy'), IFrameProxyHandler)])

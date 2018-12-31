@@ -7,6 +7,10 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+    requires = f.read().split()
+
+
 setup(
     name='jupyterlab_iframe',
     version='0.0.11',
@@ -29,14 +33,8 @@ setup(
     ],
 
     keywords='jupyter jupyterlab',
-
     packages=find_packages(exclude=['tests', ]),
-    data_files=[('', ["LICENSE", "README.md"])],
     zip_safe=False,
-
-    # entry_points={
-    #     'console_scripts': [
-    #         'sample=sample:main',
-    #     ],
-    # },
+    install_requires=requires,
+    extras_require={'dev': requires + ['nose2', 'pylint', 'flake8']}
 )

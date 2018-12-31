@@ -17,10 +17,27 @@ jupyter labextension install jupyterlab_iframe
 jupyter serverextension enable --py jupyterlab_iframe
 ```
 
-## Adding quicklinks
+## Options
+### Example
 install the server extension, and add the following to `jupyter_notebook_config.py`
 
 ```python3
 c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
 c.JupyterLabIFrame.welcome = 'a site'
 ```
+
+In this example, `list`, `of`, and `sites` will be available as links in the command palette, and `a site` will open by default the first time JupyterLab is opened.
+
+
+## Caveats
+This package uses iframes, so is subject to a few restrictions:
+- If Jlab is served over SSL, so must the sites (http/https must match)
+- If the underlying site enforces same-origin, then we cannot navigate to them (e.g. google)
+
+### Working around the caveats
+See issue #31
+
+## Similar Packages
+- [Jupyterlab-html](https://github.com/mflevine/jupyterlab_html) displays local html files as websites in an iframe
+- [Jupyterlab-sandbox](https://github.com/canavandl/jupyterlab_sandbox)
+- [Main JLab Issue](https://github.com/jupyterlab/jupyterlab/issues/2369)

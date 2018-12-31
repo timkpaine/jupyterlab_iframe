@@ -1,29 +1,10 @@
 # for Coverage
 from mock import patch, MagicMock
-from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler
+from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler, IFrameProxyHandler
 
 
 class TestExtension:
-    def setup(self):
-        pass
-        # setup() before each test method
-
-    def teardown(self):
-        pass
-        # teardown() after each test method
-
-    @classmethod
-    def setup_class(cls):
-        pass
-        # setup_class() before any methods in this class
-
-    @classmethod
-    def teardown_class(cls):
-        pass
-        # teardown_class() after any methods in this class
-
     def test_load_jupyter_server_extension(self):
-
         m = MagicMock()
 
         m.web_app.settings = {}
@@ -33,9 +14,22 @@ class TestExtension:
     def test_handler(self):
         import tornado.web
 
-        app =tornado.web.Application()
+        app = tornado.web.Application()
         m = MagicMock()
 
         h = IFrameHandler(app, m)
         h._transforms = []
         h.get()
+
+    def test_proxy_handler(self):
+        import tornado.web
+
+        app = tornado.web.Application()
+        m = MagicMock()
+
+        h = IFrameProxyHandler(app, m)
+        h._transforms = []
+
+        with patch('requests.get') as m2:
+            m2.return_value.text = 'test'
+            h.get()

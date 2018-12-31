@@ -18,6 +18,10 @@ import {
   Widget
 } from '@phosphor/widgets';
 
+import {
+  request, RequestResult
+} from './request';
+
 import '../style/index.css';
 
 let unique = 0;
@@ -42,6 +46,8 @@ class IFrameWidget extends Widget {
     div.classList.add('iframe-widget');
     let iframe = document.createElement('iframe');
     iframe.setAttribute('baseURI', '');
+
+    // TODO proxy path if necessary
     iframe.src = path;
 
     div.appendChild(iframe);
@@ -136,14 +142,11 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
   palette.addItem({command: open_command, category: 'Sites'});
 
   // grab sites from serverextension
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", PageConfig.getBaseUrl() + "iframes", true);
-  xhr.onload = function (e:any) {
-    if (xhr.readyState === 4) {
-      if (xhr.status === 200) {
-        let jsn = JSON.parse(xhr.responseText);
-        let welcome = jsn['welcome'];
-        let welcome_included = false;
+  request('get', PageConfig.getBaseUrl() + "iframes").then((res: RequestResult) => {
+    if(res.ok){
+      let jsn = res.json() as {[key: string]: string};
+      let welcome = jsn['welcome'];
+      let welcome_included = false;
 
         let sites = jsn['sites'];
 
@@ -172,17 +175,8 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
             }
           });
         }
-
-      } else {
-        console.error(xhr.statusText);
-      }
     }
-  }.bind(this);
-  xhr.onerror = function (e) {
-    console.error(xhr.statusText);
-  };
-  xhr.send(null);
-
+  });
   console.log('JupyterLab extension jupyterlab_iframe is activated!');
 };
 
