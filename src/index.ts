@@ -45,10 +45,27 @@ class IFrameWidget extends Widget {
     let div = document.createElement('div');
     div.classList.add('iframe-widget');
     let iframe = document.createElement('iframe');
-    iframe.setAttribute('baseURI', '');
 
     // TODO proxy path if necessary
-    iframe.src = path;
+    request('get', path).then((res: RequestResult) => {
+      if (res.ok){
+        console.log('site accesible: proceeding');
+        iframe.src = path;
+      } else {
+        iframe.setAttribute('baseURI', PageConfig.getBaseUrl());
+
+        console.log('site failed with code ' + res.status.toString());
+        if(res.status == 404){
+
+        } else if(res.status == 401){
+
+        } else {
+          console.log('setting proxy');
+          path = "iframes/proxy/" + path;
+          iframe.src = path;
+        }
+      }
+    });
 
     div.appendChild(iframe);
     this.node.appendChild(div);
