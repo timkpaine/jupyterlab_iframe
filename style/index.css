@@ -18,6 +18,8 @@ better solution to this problem.
 */
 body.p-mod-override-cursor div.iframe-widget {
   position: relative;
+  pointer-events: none;
+
 }
 
 body.p-mod-override-cursor div.iframe-widget:before {
