@@ -9,8 +9,8 @@ test: lint ## run the tests for travis CI
 	npm install && npm run test
 
 lint: ## run linter
-	pylint jupyterlab_iframe || echo
 	flake8 jupyterlab_iframe 
+	yarn lint
 
 annotate: ## MyPy type annotation check
 	mypy -s jupyterlab_iframe

@@ -166,3 +166,4 @@ ENV/
 
 keys.sh
 .autoversion
+yarn.lock

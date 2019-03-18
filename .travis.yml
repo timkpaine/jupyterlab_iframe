@@ -10,7 +10,9 @@ install:
     - pip install -r requirements.txt
     - pip install -U pytest pytest-cov flake8 pylint codecov
 
-script: make test
+script:
+  - make lint
+  - make test
 
 after_success:
      - codecov --token eb4e4b8f-0374-48cf-a103-8de09b2c9a44
