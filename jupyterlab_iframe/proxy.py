@@ -1,22 +1,11 @@
-import requests
 import tornado.web
 import tornado.websocket
 import tornado.httpclient
 from notebook.base.handlers import IPythonHandler
 
 
-class IFrameProxyHandler(IPythonHandler):
-    def get(self):
-        url = self.request.get_argument('url', '')
-        if url:
-            self.finish(requests.get(url, headers=self.request.headers).text)
-        else:
-            self.finish('')
-
-
 class ProxyHandler(IPythonHandler):
-    def initialize(self, proxy_path='', **kwargs):
-        self.proxy_path = proxy_path
+    def initialize(self, **kwargs):
         super(ProxyHandler, self).initialize(**kwargs)
 
     @tornado.web.asynchronous
@@ -35,9 +24,8 @@ class ProxyHandler(IPythonHandler):
 
 
 class ProxyWSHandler(tornado.websocket.WebSocketHandler):
-    def initialize(self, proxy_path='', **kwargs):
+    def initialize(self, **kwargs):
         super(ProxyWSHandler, self).initialize(**kwargs)
-        self.proxy_path = proxy_path
         self.ws = None
         self.closed = False
 
