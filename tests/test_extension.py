@@ -1,6 +1,6 @@
 # for Coverage
 from mock import patch, MagicMock
-from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler, IFrameProxyHandler
+from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler, ProxyHandler, ProxyWSHandler
 
 
 class TestExtension:
@@ -27,7 +27,7 @@ class TestExtension:
         app = tornado.web.Application()
         m = MagicMock()
 
-        h = IFrameProxyHandler(app, m)
+        h = ProxyHandler(app, m)
         h._transforms = []
 
         with patch('requests.get') as m2:
