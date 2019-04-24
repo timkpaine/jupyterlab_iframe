@@ -30,12 +30,12 @@ In this example, `list`, `of`, and `sites` will be available as links in the com
 
 
 ## Caveats
-This package uses iframes, so is subject to a few restrictions:
-- If Jlab is served over SSL, so must the sites (http/https must match)
-- If the underlying site enforces same-origin, then we cannot navigate to them (e.g. google)
+### Update for version v0.0.12 - Most of these are covered by #31
 
-### Working around the caveats
-See issue #31
+~~This package uses iframes, so is subject to a few restrictions:~~
+~~- If Jlab is served over SSL, so must the sites (http/https must match)~~
+~~- If the underlying site enforces same-origin, then we cannot navigate to them (e.g. google)~~
+
 
 ## Similar Packages
 - [Jupyterlab-html](https://github.com/mflevine/jupyterlab_html) displays local html files as websites in an iframe
