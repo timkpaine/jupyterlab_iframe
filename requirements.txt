@@ -1,1 +1,2 @@
 jupyterlab>=0.34.5
+tornado>=6.0.0
