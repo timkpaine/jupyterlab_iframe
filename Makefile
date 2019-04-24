@@ -1,5 +1,8 @@
+js: ## Clean and Make js tests
+	yarn build
+
 testjs: ## Clean and Make js tests
-	npm run test
+	yarn test
 
 testpy: ## Clean and Make unit tests
 	python3 -m pytest -v tests --cov=jupyterlab_iframe

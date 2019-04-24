@@ -1,3 +1,4 @@
+import tornado.gen
 import tornado.web
 import tornado.websocket
 import tornado.httpclient
@@ -8,19 +9,16 @@ class ProxyHandler(IPythonHandler):
     def initialize(self, **kwargs):
         super(ProxyHandler, self).initialize(**kwargs)
 
-    @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self, *args):
         '''Get the login page'''
         path = self.get_argument('path')
-
-        def callback(response):
-            if response.body:
-                self.write(response.body)
-            self.finish()
-
         req = tornado.httpclient.HTTPRequest(path)
         client = tornado.httpclient.AsyncHTTPClient()
-        client.fetch(req, callback, raise_error=False)
+        ret = yield client.fetch(req, raise_error=False)
+        if ret.body:
+            self.write(ret.body)
+        self.finish()
 
 
 class ProxyWSHandler(tornado.websocket.WebSocketHandler):

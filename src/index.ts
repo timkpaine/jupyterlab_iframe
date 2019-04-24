@@ -49,7 +49,7 @@ class IFrameWidget extends Widget {
 
     // TODO proxy path if necessary
     request("get", path).then((res: IRequestResult) => {
-      if (res.ok) {
+      if (res.ok && res.headers.indexOf('Access-Control-Allow-Origin') < 0) {
         // tslint:disable-next-line: no-console
         console.log("site accesible: proceeding");
         iframe.src = path;
@@ -58,6 +58,7 @@ class IFrameWidget extends Widget {
 
         // tslint:disable-next-line: no-console
         console.log("site failed with code " + res.status.toString());
+
         // tslint:disable-next-line: no-empty
         if (res.status === 404) {
 
@@ -66,9 +67,12 @@ class IFrameWidget extends Widget {
 
         } else {
           // tslint:disable-next-line: no-console
-          console.log("setting proxy");
-          path = "iframes/proxy/" + path;
+          path = "iframes/proxy?path=" + encodeURI(path);
           iframe.src = path;
+          console.log("setting proxy for " + path);
+          iframe.onload = (ev: Event)=>{
+            console.log(ev);
+          }
         }
       }
     });
