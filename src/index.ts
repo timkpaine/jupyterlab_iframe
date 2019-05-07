@@ -43,6 +43,11 @@ class IFrameWidget extends Widget {
     this.title.label = path;
     this.title.closable = true;
 
+    if(!path.startsWith('http')){
+      // use https, its 2019
+      path = 'https://' + path;
+    }
+
     const div = document.createElement("div");
     div.classList.add("iframe-widget");
     const iframe = document.createElement("iframe");
