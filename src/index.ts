@@ -59,8 +59,6 @@ class IFrameWidget extends Widget {
         console.log("site accesible: proceeding");
         iframe.src = path;
       } else {
-        iframe.setAttribute("baseURI", PageConfig.getBaseUrl());
-
         // tslint:disable-next-line: no-console
         console.log("site failed with code " + res.status.toString());
 
@@ -73,7 +71,7 @@ class IFrameWidget extends Widget {
         } else {
           // tslint:disable-next-line: no-console
           path = "iframes/proxy?path=" + encodeURI(path);
-          iframe.src = path;
+          iframe.src = PageConfig.getBaseUrl() + path;
           // tslint:disable-next-line: no-console
           console.log("setting proxy for " + path);
         }
@@ -172,7 +170,7 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
   palette.addItem({command: open_command, category: "Sites"});
 
   // grab sites from serverextension
-  request("get", PageConfig.getBaseUrl() + "iframes").then((res: IRequestResult) => {
+  request("get", PageConfig.getBaseUrl() + "iframes/").then((res: IRequestResult) => {
     if (res.ok) {
       const jsn = res.json() as {[key: string]: string};
       const welcome = jsn.welcome;
