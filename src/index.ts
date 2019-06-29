@@ -1,5 +1,5 @@
 import {
-  ILayoutRestorer, JupyterLab, JupyterLabPlugin,
+  ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin,
 } from "@jupyterlab/application";
 
 import {
@@ -27,7 +27,7 @@ import "../style/index.css";
 // tslint:disable: variable-name
 let unique = 0;
 
-const extension: JupyterLabPlugin<void> = {
+const extension: JupyterFrontEndPlugin<void> = {
   activate,
   autoStart: true,
   id: "jupyterlab_iframe",
@@ -112,13 +112,13 @@ class OpenIFrameWidget extends Widget {
   }
 }
 
-function registerSite(app: JupyterLab, palette: ICommandPalette, site: string) {
+function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string) {
   const command = "iframe:open-" + site;
 
   app.commands.addCommand(command, {
     execute: () => {
         const widget = new IFrameWidget(site);
-        app.shell.addToMainArea(widget);
+        app.shell.add(widget);
         app.shell.activateById(widget.id);
     },
     isEnabled: () => true,
@@ -127,7 +127,7 @@ function registerSite(app: JupyterLab, palette: ICommandPalette, site: string) {
   palette.addItem({command, category: "Sites"});
 }
 
-function activate(app: JupyterLab, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
+function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
 
   // Declare a widget variable
   let widget: IFrameWidget;
@@ -155,12 +155,12 @@ function activate(app: JupyterLab, docManager: IDocumentManager, palette: IComma
           }
           path =  result.value as string;
           widget = new IFrameWidget(path);
-          app.shell.addToMainArea(widget);
+          app.shell.add(widget);
           app.shell.activateById(widget.id);
         });
       } else {
         widget = new IFrameWidget(path);
-        app.shell.addToMainArea(widget);
+        app.shell.add(widget);
         app.shell.activateById(widget.id);
       }
     },
