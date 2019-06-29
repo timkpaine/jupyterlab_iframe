@@ -13,7 +13,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(
     name='jupyterlab_iframe',
-    version='0.2.0',
+    version='0.2.1',
     description='IFrame widgets for JupyterLab',
     long_description=long_description,
     url='https://github.com/timkpaine/jupyterlab_iframe',
