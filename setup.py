@@ -17,7 +17,6 @@ setup(
     description='IFrame widgets for JupyterLab',
     long_description=long_description,
     url='https://github.com/timkpaine/jupyterlab_iframe',
-    download_url='https://github.com/timkpaine/jupyterlab_iframe/archive/v0.0.12.tar.gz',
     author='Tim Paine',
     author_email='t.paine154@gmail.com',
     license='Apache 2.0',
