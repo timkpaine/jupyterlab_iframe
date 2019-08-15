@@ -125,6 +125,7 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
   palette.addItem({command, category: "Sites"});
 }
 
+// tslint:disable-next-line: max-line-length
 function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
 
   // Declare a widget variable
