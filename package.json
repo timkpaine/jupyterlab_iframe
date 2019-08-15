@@ -1,45 +1,62 @@
 {
   "name": "jupyterlab_iframe",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A JupyterLab extension.",
   "author": "Tim Paine",
   "main": "lib/index.js",
   "keywords": [
     "jupyter",
-    "jupyterlab"
+    "jupyterlab",
+    "jupyterlab-extension"
   ],
   "scripts": {
     "build": "tsc",
+    "build:lab": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack ..",
+    "build:all": "npm run build && npm run build:lab",
     "clean": "rimraf lib",
-    "lint": "./node_modules/.bin/tslint 'src/*.ts'",
+    "lint": "./node_modules/.bin/tslint './src/*.ts'",
     "prepublishOnly": "npm run build",
-    "test": "jest --coverage --collectCoverageFrom=src/*.{ts}",
-    "watch": "tsc -w --listEmittedFiles"
+    "test": "jest --coverage --collectCoverageFrom=src/*.{ts}"
   },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.css"
   ],
   "jupyterlab": {
-    "extension": true
+    "extension": true,
+    "discovery": {
+      "server": {
+        "base": {
+          "name": "jupyterlab_iframe"
+        },
+        "managers": [
+          "pip"
+        ]
+      }
+    }
   },
   "dependencies": {
     "@jupyterlab/application": "^1.0.0",
     "@jupyterlab/apputils": "^1.0.0",
     "@jupyterlab/coreutils": "^3.0.0",
     "@jupyterlab/docmanager": "^1.0.0",
+    "@jupyterlab/filebrowser": "^1.0.0",
+    "@jupyterlab/launcher": "^1.0.0",
+    "@jupyterlab/mainmenu": "^1.0.0",
+    "@jupyterlab/notebook": "^1.0.0",
     "@phosphor/disposable": "^1.1.2"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.9",
-    "@types/rewire": "^2.5.28",
+    "@babel/preset-env": "^7.5.5",
+    "@types/jest": "^24.0.4",
+    "babel-jest": "^24.8.0",
     "isomorphic-fetch": "^2.2.1",
-    "jest": "^23.6.0",
+    "jest": "^24.1.0",
     "jest-transform-css": "^2.0.0",
-    "rewire": "^4.0.1",
+    "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
     "ts-jest": "^23.10.4",
-    "tslint": "^5.16.0",
+    "tslint": "^5.14.0",
     "typescript": "^3.1.6"
   }
 }
