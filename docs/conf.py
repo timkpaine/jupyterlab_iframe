@@ -58,7 +58,7 @@ author = 'Tim Paine'
 # built documents.
 
 import os
-_version_py = os.path.join('..', '..', 'jupyterlab', '_version.py')
+_version_py = os.path.join('..', '..', 'jupyterlab_iframe', '_version.py')
 version_ns = {}
 
 with open(_version_py, mode='r') as version_file:
