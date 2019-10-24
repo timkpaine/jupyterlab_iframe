@@ -145,7 +145,7 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
           focusNodeSelector: "input",
           title: "Open site",
         }).then((result) => {
-          if (result.button.label === "CANCEL") {
+          if (result.button.label === "Cancel") {
             return;
           }
 
