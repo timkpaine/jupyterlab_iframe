@@ -40,7 +40,7 @@ js:  ## build javascript
 	yarn build
 
 fix:  ## run autopep8/tslint fix
-	autopep8 --in-place -r -a -a crowdsource/
+	autopep8 --in-place -r -a -a jupyterlab_iframe/
 	./node_modules/.bin/tslint --fix src/ts/**/*.ts
 
 labextension: js ## enable labextension
