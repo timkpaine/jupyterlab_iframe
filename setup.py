@@ -70,7 +70,7 @@ setup(
     packages=find_packages(exclude=['tests', ]),
     install_requires=requires,
     extras_require={
-        'dev': ['pytest', 'pytest-cov', 'pylint', 'flake8', 'bumpversion', 'autopep8']
+        'dev': ['pytest', 'pytest-cov', 'pylint', 'flake8', 'bumpversion', 'autopep8', 'mock']
     },
     include_package_data=True,
     zip_safe=False,
