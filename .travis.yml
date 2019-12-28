@@ -29,9 +29,10 @@ before_install:
   - npm install -g yarn
 
 install:
-    - python3 -m pip install -e .[dev]
-    - python3 -m pip install -r requirements.txt
-    - yarn
+  -  brew link --overwrite python
+  - python3 -m pip install -e .[dev]
+  - python3 -m pip install -r requirements.txt
+  - yarn
 
 script:
   - make lint
