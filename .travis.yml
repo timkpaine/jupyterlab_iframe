@@ -29,7 +29,7 @@ before_install:
   - npm install -g yarn
 
 install:
-  -  brew link --overwrite python
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew link --overwrite python; fi
   - python3 -m pip install -e .[dev]
   - python3 -m pip install -r requirements.txt
   - yarn
