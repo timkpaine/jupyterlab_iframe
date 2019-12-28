@@ -56,9 +56,7 @@ author = 'Tim Paine'
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-
-import os
-_version_py = os.path.join('..', '..', 'jupyterlab_iframe', '_version.py')
+_version_py = os.path.join('..', 'jupyterlab_iframe', '_version.py')
 version_ns = {}
 
 with open(_version_py, mode='r') as version_file:
