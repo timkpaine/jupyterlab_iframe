@@ -5,7 +5,7 @@ testpy: ## Clean and Make unit tests
 	python3 -m pytest -v tests --cov=jupyterlab_iframe
 
 test: lint ## run the tests for travis CI
-	@ python3 -m pytest -v tests --cov=jupyterlab_iframe
+	@ python3 -m pytest -v tests --cov=jupyterlab_iframe --junitxml=python_junit.xml --cov-report=xml --cov-branch
 	yarn test
 
 lint: ## run linter
