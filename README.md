@@ -41,3 +41,4 @@ In this example, `list`, `of`, and `sites` will be available as links in the com
 - [Jupyterlab-html](https://github.com/mflevine/jupyterlab_html) displays local html files as websites in an iframe
 - [Jupyterlab-sandbox](https://github.com/canavandl/jupyterlab_sandbox)
 - [Main JLab Issue](https://github.com/jupyterlab/jupyterlab/issues/2369)
+

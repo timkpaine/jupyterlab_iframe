@@ -167,3 +167,7 @@ ENV/
 keys.sh
 .autoversion
 yarn.lock
+
+docs/api
+docs/index.md
+
