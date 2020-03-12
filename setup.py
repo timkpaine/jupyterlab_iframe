@@ -18,9 +18,21 @@ version = get_version(pjoin(here, name, '_version.py'))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    requires = f.read().split()
+requires = [
+    'jupyterlab>=1.0.0',
+    'requests>=2.22.0',
+    'tornado>=6.0.0'
+]
 
+dev_requires = requires + [
+    'pytest',
+    'pytest-cov',
+    'pylint',
+    'flake8',
+    'bump2version',
+    'autopep8',
+    'mock'
+]
 
 data_spec = [
     # Lab extension installed by default:
@@ -70,7 +82,7 @@ setup(
     packages=find_packages(exclude=['tests', ]),
     install_requires=requires,
     extras_require={
-        'dev': ['pytest', 'pytest-cov', 'pylint', 'flake8', 'bumpversion', 'autopep8', 'mock']
+        'dev': dev_requires
     },
     include_package_data=True,
     zip_safe=False,

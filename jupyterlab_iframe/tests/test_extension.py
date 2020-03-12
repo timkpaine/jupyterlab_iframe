@@ -1,6 +1,6 @@
 # for Coverage
 from mock import patch, MagicMock
-from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler, ProxyHandler, ProxyWSHandler
+from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler, ProxyHandler, ProxyWSHandler  # noqa: F401
 
 
 class TestExtension:

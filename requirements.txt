@@ -1,3 +1,0 @@
-jupyterlab>=1.0.0
-requests>=2.22.0
-tornado>=6.0.0
