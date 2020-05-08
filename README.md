@@ -2,7 +2,7 @@
 Open a site in a widget, or add a set of "quicklinks".
 
 [![Build Status](https://dev.azure.com/tpaine154/jupyter/_apis/build/status/timkpaine.jupyterlab_iframe?branchName=master)](https://dev.azure.com/tpaine154/jupyter/_build/latest?definitionId=10&branchName=master)
-[![Coverage](https://img.shields.io/azure-devops/coverage/tpaine154/jupyter/10)](https://dev.azure.com/tpaine154/jupyter/_build?definitionId=10&_a=summary)
+[![Coverage](https://img.shields.io/azure-devops/coverage/tpaine154/jupyter/10/master)](https://dev.azure.com/tpaine154/jupyter/_build?definitionId=10&_a=summary)
 [![GitHub issues](https://img.shields.io/github/issues/timkpaine/jupyterlab_iframe.svg)]()
 [![PyPI](https://img.shields.io/pypi/l/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
