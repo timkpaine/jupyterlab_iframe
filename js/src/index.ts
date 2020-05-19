@@ -38,13 +38,16 @@ class IFrameWidget extends Widget {
   public constructor(path: string) {
     super();
     this.id = path + "-" + unique;
-    unique += 1;
-
+    const iconClass = "favicon-" + unique;
+    this.title.iconClass = iconClass;
     this.title.label = path;
     this.title.closable = true;
 
+    unique += 1;
+
+
     if (!path.startsWith("http")) {
-      // use https, its 2019
+      // use https, its 2020
       path = "https://" + path;
     }
 
@@ -58,6 +61,14 @@ class IFrameWidget extends Widget {
         // eslint-disable-next-line no-console
         console.log("site accesible: proceeding");
         iframe.src = path;
+        const favicon_url = new URL("/favicon.ico", path).href;
+        request("get", favicon_url).then((res2: IRequestResult) => {
+          if (res2.ok) {
+            const style = document.createElement("style");
+            style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+            document.head.appendChild(style);
+          }
+        });
       } else {
         // eslint-disable-next-line no-console
         console.log("site failed with code " + res.status.toString());
@@ -69,10 +80,20 @@ class IFrameWidget extends Widget {
         } else if (res.status === 401) {
 
         } else {
+          const favicon_url = PageConfig.getBaseUrl() + "iframes/proxy?path=" + new URL("/favicon.ico", path).href;
+
           path = "iframes/proxy?path=" + encodeURI(path);
           iframe.src = PageConfig.getBaseUrl() + path;
           // eslint-disable-next-line no-console
           console.log("setting proxy for " + path);
+
+          request("get", favicon_url).then((res2: IRequestResult) => {
+            if (res2.ok) {
+              const style = document.createElement("style");
+              style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+              document.head.appendChild(style);
+            }
+          });
         }
       }
     });
@@ -123,7 +144,6 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
   palette.addItem({command, category: "Sites"});
 }
 
-// tslint:disable-next-line: max-line-length
 function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
 
   // Declare a widget variable
@@ -178,7 +198,6 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
       const sites = jsn.sites;
 
       for (const site of sites) {
-        // tslint:disable-next-line: no-console
         // eslint-disable-next-line no-console
         console.log("adding quicklink for " + site);
 
