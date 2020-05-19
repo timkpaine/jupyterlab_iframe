@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin,
 } from "@jupyterlab/application";
@@ -24,7 +25,6 @@ import {
 
 import "../style/index.css";
 
-// tslint:disable: variable-name
 let unique = 0;
 
 const extension: JupyterFrontEndPlugin<void> = {
@@ -35,7 +35,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 };
 
 class IFrameWidget extends Widget {
-  constructor(path: string) {
+  public constructor(path: string) {
     super();
     this.id = path + "-" + unique;
     unique += 1;
@@ -54,25 +54,24 @@ class IFrameWidget extends Widget {
 
     // TODO proxy path if necessary
     request("get", path).then((res: IRequestResult) => {
-      if (res.ok && res.headers.indexOf("Access-Control-Allow-Origin") < 0) {
-        // tslint:disable-next-line: no-console
+      if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
+        // eslint-disable-next-line no-console
         console.log("site accesible: proceeding");
         iframe.src = path;
       } else {
-        // tslint:disable-next-line: no-console
+        // eslint-disable-next-line no-console
         console.log("site failed with code " + res.status.toString());
 
-        // tslint:disable-next-line: no-empty
+        // eslint-disable-next-line no-empty
         if (res.status === 404) {
 
+        // eslint-disable-next-line no-empty
         } else if (res.status === 401) {
-        // tslint:disable-next-line: no-empty
 
         } else {
-          // tslint:disable-next-line: no-console
           path = "iframes/proxy?path=" + encodeURI(path);
           iframe.src = PageConfig.getBaseUrl() + path;
-          // tslint:disable-next-line: no-console
+          // eslint-disable-next-line no-console
           console.log("setting proxy for " + path);
         }
       }
@@ -84,9 +83,8 @@ class IFrameWidget extends Widget {
 
 }
 
-// tslint:disable-next-line: max-classes-per-file
 class OpenIFrameWidget extends Widget {
-  constructor() {
+  public constructor() {
     const body = document.createElement("div");
     const existingLabel = document.createElement("label");
     existingLabel.textContent = "Site:";
@@ -105,8 +103,8 @@ class OpenIFrameWidget extends Widget {
     return this.inputNode.value;
   }
 
-  get inputNode(): HTMLInputElement {
-    return this.node.getElementsByTagName("input")[0] as HTMLInputElement;
+  public get inputNode(): HTMLInputElement {
+    return this.node.getElementsByTagName("input")[0];
   }
 }
 
@@ -115,9 +113,9 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
 
   app.commands.addCommand(command, {
     execute: () => {
-        const widget = new IFrameWidget(site);
-        app.shell.add(widget);
-        app.shell.activateById(widget.id);
+      const widget = new IFrameWidget(site);
+      app.shell.add(widget);
+      app.shell.activateById(widget.id);
     },
     isEnabled: () => true,
     label: "Open " + site,
@@ -136,7 +134,7 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
 
   app.commands.addCommand(open_command, {
     execute: (args) => {
-      let path = typeof args.path === "undefined" ? "" : args.path as string;
+      let path = typeof args.path === "undefined" ? "" : (args.path as string);
 
       if (path === "") {
         showDialog({
@@ -152,7 +150,7 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
           if (!result.value) {
             return null;
           }
-          path =  result.value as string;
+          path =  result.value;
           widget = new IFrameWidget(path);
           app.shell.add(widget);
           app.shell.activateById(widget.id);
@@ -173,41 +171,42 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
   // grab sites from serverextension
   request("get", PageConfig.getBaseUrl() + "iframes/").then((res: IRequestResult) => {
     if (res.ok) {
-      const jsn = res.json() as {[key: string]: string};
+      const jsn: any = res.json();
       const welcome = jsn.welcome;
       let welcome_included = false;
 
       const sites = jsn.sites;
 
       for (const site of sites) {
-          // tslint:disable-next-line: no-console
-          console.log("adding quicklink for " + site);
+        // tslint:disable-next-line: no-console
+        // eslint-disable-next-line no-console
+        console.log("adding quicklink for " + site);
 
-          if (site === welcome) {
-            welcome_included = true;
-          }
-          if (site) {
-            registerSite(app, palette, site);
-          }
+        if (site === welcome) {
+          welcome_included = true;
         }
+        if (site) {
+          registerSite(app, palette, site);
+        }
+      }
 
       if (!welcome_included) {
-          if (welcome !== "") {
-            registerSite(app, palette, welcome);
-          }
+        if (welcome !== "") {
+          registerSite(app, palette, welcome);
         }
+      }
 
       if (welcome) {
-          app.restored.then(() => {
-            if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
-              localStorage.setItem("jupyterlab_iframe_welcome", "false");
-              app.commands.execute("iframe:open-" + welcome);
-            }
-          });
-        }
+        app.restored.then(() => {
+          if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
+            localStorage.setItem("jupyterlab_iframe_welcome", "false");
+            app.commands.execute("iframe:open-" + welcome);
+          }
+        });
+      }
     }
   });
-  // tslint:disable-next-line: no-console
+  // eslint-disable-next-line no-console
   console.log("JupyterLab extension jupyterlab_iframe is activated!");
 }
 

@@ -1,20 +1,20 @@
 testjs: ## Clean and Make js tests
-	yarn test
+	cd js; yarn test
 
 testpy: ## Clean and Make unit tests
 	python3.7 -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe
 
 tests: lint ## run the tests
 	python3.7 -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe --junitxml=python_junit.xml --cov-report=xml --cov-branch
-	yarn test
+	cd js; yarn test
 
 lint: ## run linter
 	flake8 jupyterlab_iframe setup.py
-	yarn lint
+	cd js; yarn lint
 
 fix:  ## run autopep8/tslint fix
 	autopep8 --in-place -r -a -a jupyterlab_iframe/
-	./node_modules/.bin/tslint --fix src/*
+	cd js; yarn fix
 
 annotate: ## MyPy type annotation check
 	mypy -s jupyterlab_iframe
@@ -40,11 +40,11 @@ serverextension: install ## enable serverextension
 	jupyter serverextension enable --py jupyterlab_iframe
 
 js:  ## build javascript
-	yarn
-	yarn build
+	cd js; yarn
+	cd js; yarn build
 
 labextension: js ## enable labextension
-	jupyter labextension install .
+	cd js; jupyter labextension install .
 
 dist: js  ## create dists
 	rm -rf dist build
@@ -52,7 +52,7 @@ dist: js  ## create dists
 
 publish: dist  ## dist to pypi and npm
 	twine check dist/* && twine upload dist/*
-	npm publish
+	cd js; npm publish
 
 # Thanks to Francoise at marmelab.com for this
 .DEFAULT_GOAL := help
