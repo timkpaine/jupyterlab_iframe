@@ -23,6 +23,7 @@ requires = [
     'jupyterlab>=1.0.0',
     'requests>=2.22.0',
     'tornado>=6.0.0'
+    'tornado-proxy-handlers>=0.0.4',
 ]
 
 dev_requires = requires + [
@@ -70,8 +71,6 @@ setup(
 
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
