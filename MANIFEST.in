@@ -6,18 +6,15 @@ include requirements.txt
 include setup.cfg
 include pyproject.toml
 include .bumpversion.cfg
-include jest.config.js
 include Makefile
 
-graft jupyterlab_iframe/tests
-
-# Webapp files
 graft js
-prune js/dist
-prune js/build
+prune docs
 prune js/lib
-prune js/node_modules
+prune js/build
+prune js/dist
 prune js/yarn.lock
+prune js/node_modules
 
 
 # Patterns to exclude from any directory
@@ -26,3 +23,5 @@ global-exclude *.pyc
 global-exclude *.pyo
 global-exclude .git
 global-exclude .ipynb_checkpoints
+global-exclude .DS_Store
+
