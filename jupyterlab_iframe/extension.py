@@ -1,4 +1,5 @@
 import json
+import tornado.web
 from notebook.base.handlers import IPythonHandler
 from notebook.utils import url_path_join
 from .proxy import ProxyHandler, ProxyWSHandler
@@ -9,6 +10,7 @@ class IFrameHandler(IPythonHandler):
         self.sites = sites
         self.welcome = welcome
 
+    @tornado.web.authenticated
     def get(self):
         self.finish(json.dumps({'welcome': self.welcome or '', 'sites': self.sites}))
 
