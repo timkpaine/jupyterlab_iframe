@@ -1,0 +1,25 @@
+#!/bin/bash
+EXTENSIONS="
+jupyterlab_iframe
+"
+
+
+until jupyter labextension install $EXTENSIONS --no-build
+do
+    echo "Extension failed to install"
+done
+
+until jupyter lab build --dev-build=False --minimize=False
+do
+    echo "Extension failed to install"
+done
+
+jupyter serverextension enable --py jupyterlab_iframe
+
+
+config="c.JupyterLabIFrame.welcome = 'binder/landing.html'"
+
+mkdir ~/.jupyter
+echo -e $config > ~/.jupyter/jupyter_notebook_config.py
+
+
