@@ -1,26 +1,29 @@
+PYTHON := python
+YARN := yarn
+
 testjs: ## Clean and Make js tests
-	cd js; yarn test
+	cd js; ${YARN} test
 
 testpy: ## Clean and Make unit tests
-	python3.7 -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe
+	${PYTHON} -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe
 
 tests: lint ## run the tests
-	python3.7 -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe --junitxml=python_junit.xml --cov-report=xml --cov-branch
-	cd js; yarn test
+	${PYTHON} -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe --junitxml=python_junit.xml --cov-report=xml --cov-branch
+	cd js; ${YARN} test
 
 lint: ## run linter
-	flake8 jupyterlab_iframe setup.py
-	cd js; yarn lint
+	${PYTHON} -m flake8 jupyterlab_iframe setup.py
+	cd js; ${YARN} lint
 
 fix:  ## run autopep8/tslint fix
-	autopep8 --in-place -r -a -a jupyterlab_iframe/
-	cd js; yarn fix
+	${PYTHON} -m autopep8 --in-place -r -a -a jupyterlab_iframe/
+	cd js; ${YARN} fix
 
 annotate: ## MyPy type annotation check
-	mypy -s jupyterlab_iframe
+	${PYTHON} -m mypy -s jupyterlab_iframe
 
 annotate_l: ## MyPy type annotation check - count only
-	mypy -s jupyterlab_iframe | wc -l
+	${PYTHON} -m mypy -s jupyterlab_iframe | wc -l
 
 clean: ## clean the repository
 	find . -name "__pycache__" | xargs  rm -rf
@@ -34,24 +37,24 @@ docs:  ## make documentation
 	open ./docs/_build/html/index.html
 
 install:  ## install to site-packages
-	pip3 install .
+	${PYTHON} -m pip install .
 
 serverextension: install ## enable serverextension
-	jupyter serverextension enable --py jupyterlab_iframe
+	${PYTHON} -m jupyter serverextension enable --py jupyterlab_iframe
 
 js:  ## build javascript
-	cd js; yarn
-	cd js; yarn build
+	cd js; ${YARN}
+	cd js; ${YARN} build
 
 labextension: js ## enable labextension
-	cd js; jupyter labextension install .
+	cd js; ${PYTHON} -m jupyter labextension install .
 
 dist: js  ## create dists
 	rm -rf dist build
-	python3.7 setup.py sdist bdist_wheel
+	${PYTHON} setup.py sdist bdist_wheel
 
 publish: dist  ## dist to pypi and npm
-	twine check dist/* && twine upload dist/*
+	${PYTHON} -m twine check dist/* && twine upload dist/*
 	cd js; npm publish
 
 # Thanks to Francoise at marmelab.com for this
