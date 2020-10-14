@@ -6,7 +6,7 @@ jupyter serverextension enable --py jupyterlab_iframe
 
 config="c.JupyterLabIFrame.welcome = 'local://binder/landing.html'"
 
-mkdir ~/.jupyter
+mkdir -p ~/.jupyter
 echo -e $config > ~/.jupyter/jupyter_notebook_config.py
 
 

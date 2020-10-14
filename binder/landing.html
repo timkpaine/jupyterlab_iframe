@@ -1,6 +1,66 @@
-<html>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>4995 - OSS</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/white.min.css" id="theme">
+        <style>
+            .reveal .smallfont {
+                font-size: 18px;
+            }
+        </style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+                <section >
+                    <section data-markdown data-separator="---">
+                        <script type="text/template">
+                            # Welcome
 
-<h1>Welcome!</h1>
-<p>This is a sample binder landing page, hosted with <a href="https://github.com/timkpaine/jupyterlab_iframe">jupyterlab_iframe</a>!</p>
+                            Beautiful binder landing pages with [jupyterlab_iframe](https://github.com/timkpaine/jupyterlab_iframe)
 
+                            ---
+
+                            ## Step 1
+                            Copy binder folder from the [jupyterlab_iframe](https://github.com/timkpaine/jupyterlab_iframe) repo
+
+                            ---
+
+                            ## Step 2
+                            Customise `binder/landing.html`
+
+                            ---
+
+                            ## Step 3
+                            Commit changes and push
+
+                            ---
+
+                            ## Step 4
+                            Add binder link to your readme and enjoy!
+
+                        </script>
+                    </section>
+                </section>
+            </div>
+		</div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/markdown/markdown.min.js"></script>
+        
+		<script>
+			Reveal.initialize({
+				center: true,
+				controls: true,
+				history: true,
+				plugins: [ RevealMarkdown ],
+				progress: true,
+                slideNumber: true
+			});
+        </script>
+        
+	</body>
 </html>
