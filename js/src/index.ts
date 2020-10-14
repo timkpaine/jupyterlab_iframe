@@ -35,18 +35,22 @@ const extension: JupyterFrontEndPlugin<void> = {
 };
 
 class IFrameWidget extends Widget {
+  private local_file: boolean;
+
   public constructor(path: string) {
     super();
-    this.id = path + "-" + unique;
-    const iconClass = "favicon-" + unique;
+    this.id = `${path}-${unique}`;
+    const iconClass = `favicon-${unique}`;
     this.title.iconClass = iconClass;
     this.title.label = path;
     this.title.closable = true;
 
+    this.local_file = path.startsWith("local://");
+
     unique += 1;
 
 
-    if (!path.startsWith("http")) {
+    if (!this.local_file && !path.startsWith("http")) {
       // use https, its 2020
       path = "https://" + path;
     }
@@ -55,37 +59,20 @@ class IFrameWidget extends Widget {
     div.classList.add("iframe-widget");
     const iframe = document.createElement("iframe");
 
-    // TODO proxy path if necessary
-    request("get", path).then((res: IRequestResult) => {
-      if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
-        // eslint-disable-next-line no-console
-        console.log("site accesible: proceeding");
-        iframe.src = path;
-        const favicon_url = new URL("/favicon.ico", path).href;
-        request("get", favicon_url).then((res2: IRequestResult) => {
-          if (res2.ok) {
-            const style = document.createElement("style");
-            style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
-            document.head.appendChild(style);
-          }
-        });
-      } else {
-        // eslint-disable-next-line no-console
-        console.log("site failed with code " + res.status.toString());
+    if (!this.local_file){
+      // External website
 
-        // eslint-disable-next-line no-empty
-        if (res.status === 404) {
+      // First try to get directly
+      request("get", path).then((res: IRequestResult) => {
+        if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
+          // Site does not disable iframe
 
-        // eslint-disable-next-line no-empty
-        } else if (res.status === 401) {
-
-        } else {
-          const favicon_url = PageConfig.getBaseUrl() + "iframes/proxy?path=" + new URL("/favicon.ico", path).href;
-
-          path = "iframes/proxy?path=" + encodeURI(path);
-          iframe.src = PageConfig.getBaseUrl() + path;
           // eslint-disable-next-line no-console
-          console.log("setting proxy for " + path);
+          console.log("site accessible: proceeding");
+
+          iframe.src = path;
+
+          const favicon_url = new URL("/favicon.ico", path).href;
 
           request("get", favicon_url).then((res2: IRequestResult) => {
             if (res2.ok) {
@@ -94,9 +81,47 @@ class IFrameWidget extends Widget {
               document.head.appendChild(style);
             }
           });
+
+        } else {
+          // Site is blocked for some reason, so attempt to proxy through python.
+          // Reasons include: disallowing iframes, http/https mismatch, etc
+
+          // eslint-disable-next-line no-console
+          console.log("site failed with code " + res.status.toString());
+
+          // eslint-disable-next-line no-empty
+          if (res.status === 404) {
+          // nothing we can do
+          // eslint-disable-next-line no-empty
+          } else if (res.status === 401) {
+          // nothing we can do
+          } else {
+            // otherwise try to proxy
+            const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", path).href}`;
+
+            path = `iframes/proxy?path=${encodeURI(path)}`;
+            iframe.src = PageConfig.getBaseUrl() + path;
+            // eslint-disable-next-line no-console
+            console.log(`setting proxy for ${path}`);
+
+            request("get", favicon_url).then((res2: IRequestResult) => {
+              if (res2.ok) {
+                const style = document.createElement("style");
+                style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+                document.head.appendChild(style);
+              }
+            });
+          }
         }
-      }
-    });
+      });
+    } else {
+      // Local file, replace url and query for local
+      // eslint-disable-next-line no-console
+      console.log("fetching local file " + path);
+      path = `iframes/local?path=${encodeURI(path.replace("local://", ""))}`;
+      iframe.src = PageConfig.getBaseUrl() + path;
+
+    }
 
     div.appendChild(iframe);
     this.node.appendChild(div);
@@ -193,6 +218,8 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
     if (res.ok) {
       const jsn: any = res.json();
       const welcome = jsn.welcome;
+      const local_files = jsn.local_files;
+
       let welcome_included = false;
 
       const sites = jsn.sites;
@@ -208,6 +235,21 @@ function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: I
           registerSite(app, palette, site);
         }
       }
+
+      for (const site of local_files) {
+        const actual_site = `local://${site}`;
+
+        // eslint-disable-next-line no-console
+        console.log("adding quicklink for " + actual_site);
+
+        if (actual_site === welcome) {
+          welcome_included = true;
+        }
+        if (actual_site) {
+          registerSite(app, palette, actual_site);
+        }
+      }
+
 
       if (!welcome_included) {
         if (welcome !== "") {

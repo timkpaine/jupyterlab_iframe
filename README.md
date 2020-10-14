@@ -18,16 +18,30 @@ jupyter serverextension enable --py jupyterlab_iframe
 ```
 
 ## Options
-### Example
+### External Sites
 install the server extension, and add the following to `jupyter_notebook_config.py`
 
 ```python3
 c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
-c.JupyterLabIFrame.welcome = 'a site'
 ```
 
-In this example, `list`, `of`, and `sites` will be available as links in the command palette, and `a site` will open by default the first time JupyterLab is opened.
+In this example, `list`, `of`, and `sites` will be available as links in the command palette.
 
+### Landing page on initial page load
+```python3
+c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
+c.JupyterLabIFrame.welcome = 'a site to show on initial load'
+c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
+```
+
+In this example, `a site` will open by default the first time JupyterLab is opened.
+
+### Open local html file in iframe
+```python3
+c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
+```
+
+Any files specified by 'local_files' will be served up as local links. By default any file on the filesystem is allowed, to disable this and only allow the list specifically designated here, set `c.JupyterLabIFrame.allow_any_local = False`. If you allow all, in the open dialog start the file path with `local://`.
 
 ## Caveats
 ### Update for version v0.0.12 - Most of these are covered by #31

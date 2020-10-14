@@ -10,6 +10,7 @@ class ProxyHandler(IPythonHandler, TProxyHandler):
     def initialize(self, **kwargs):
         super(ProxyHandler, self).initialize(**kwargs)
 
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def get(self, *args):
         '''Get the login page'''
@@ -17,6 +18,7 @@ class ProxyHandler(IPythonHandler, TProxyHandler):
 
 
 class ProxyWSHandler(TProxyWSHandler):
+    @tornado.web.authenticated
     @tornado.gen.coroutine
     def open(self, *args):
         path = self.get_argument('path')
