@@ -1,5 +1,5 @@
 #!/bin/bash
-jupyter labextension install jupyterlab_iframe/js
+jupyter labextension install jupyterlab_iframe@^0.2
 jupyter lab build --dev-build=False --minimize=False
 jupyter serverextension enable --py jupyterlab_iframe
 
