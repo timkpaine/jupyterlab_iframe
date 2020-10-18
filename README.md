@@ -57,3 +57,23 @@ Any files specified by 'local_files' will be served up as local links. By defaul
 - [Jupyterlab-sandbox](https://github.com/canavandl/jupyterlab_sandbox)
 - [Main JLab Issue](https://github.com/jupyterlab/jupyterlab/issues/2369)
 
+
+
+## Configuring Binder with a landing page
+To configure binder to serve a landing page, simply add the following configuration:
+
+To requirements.txt:
+
+`jupyterlab_iframe>=0.2`
+
+To postBuild:
+
+```bash
+jupyter labextension install jupyterlab_iframe@^0.2
+jupyter serverextension enable --py jupyterlab_iframe
+
+config="c.JupyterLabIFrame.welcome = 'local://binder/landing.html'"
+mkdir -p ~/.jupyter
+echo -e $config > ~/.jupyter/jupyter_notebook_config.py
+```
+
