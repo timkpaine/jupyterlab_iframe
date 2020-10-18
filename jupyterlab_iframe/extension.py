@@ -27,11 +27,16 @@ class IFrameLocalFileHandler(IPythonHandler):
 
     @tornado.web.authenticated
     def get(self):
-        path = self.get_argument('path')
+        path = self.get_argument('path', '')
         if path and (self.allow_any or path in self.local_files):
-            with open(path, 'r') as fp:
-                self.set_header('Content-Type', 'text/html')
-                self.finish(fp.read())
+            try:
+                with open(path, 'r') as fp:
+                    self.set_header('Content-Type', 'text/html')
+                    self.finish(fp.read())
+            except UnicodeDecodeError:
+                with open(path, 'rb') as fp:
+                    self.finish(fp.read())
+
         raise tornado.web.HTTPError(404, 'Site not found:{}'.format(path))
 
 
