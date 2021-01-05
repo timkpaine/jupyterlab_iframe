@@ -16,14 +16,8 @@ lint: ## run linter
 	cd js; ${YARN} lint
 
 fix:  ## run autopep8/tslint fix
-	${PYTHON} -m autopep8 --in-place -r -a -a jupyterlab_iframe/
+	${PYTHON} -m black jupyterlab_iframe/ setup.py
 	cd js; ${YARN} fix
-
-annotate: ## MyPy type annotation check
-	${PYTHON} -m mypy -s jupyterlab_iframe
-
-annotate_l: ## MyPy type annotation check - count only
-	${PYTHON} -m mypy -s jupyterlab_iframe | wc -l
 
 clean: ## clean the repository
 	find . -name "__pycache__" | xargs  rm -rf
@@ -52,10 +46,11 @@ labextension: js ## enable labextension
 dist: js  ## create dists
 	rm -rf dist build
 	${PYTHON} setup.py sdist bdist_wheel
+	${PYTHON} -m twine check dist/*
 
 publish: dist  ## dist to pypi and npm
-	${PYTHON} -m twine check dist/* && twine upload dist/*
-	cd js; npm publish
+	${PYTHON} -m twine upload dist/* --skip-existing
+	cd js; npm publish || echo "can't publish - might already exist"
 
 # Thanks to Francoise at marmelab.com for this
 .DEFAULT_GOAL := help

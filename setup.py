@@ -17,7 +17,7 @@ jshere = path.join(here, 'js')
 version = get_version(pjoin(here, name, '_version.py'))
 
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
+    long_description = f.read().replace("\r\n", "\n")
 
 requires = [
     'jupyterlab>=2.0.0',
@@ -26,14 +26,17 @@ requires = [
     'tornado-proxy-handlers>=0.0.4',
 ]
 
-dev_requires = requires + [
-    'pytest',
-    'pytest-cov',
-    'pylint',
-    'flake8',
-    'bump2version',
-    'autopep8',
-    'mock'
+requires_dev = requires + [
+    "black>=20.",
+    "bump2version>=1.0.0",
+    "flake8>=3.7.8",
+    "flake8-black>=0.2.1",
+    "jupyter_packaging",
+    "mock",
+    "pytest>=4.3.0",
+    "pytest-cov>=2.6.1",
+    "Sphinx>=1.8.4",
+    "sphinx-markdown-builder>=0.5.2",
 ]
 
 data_spec = [
@@ -83,7 +86,7 @@ setup(
     packages=find_packages(),
     install_requires=requires,
     extras_require={
-        'dev': dev_requires
+        'dev': requires_dev
     },
     include_package_data=True,
     zip_safe=False,
