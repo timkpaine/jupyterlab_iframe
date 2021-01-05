@@ -1,6 +1,10 @@
 # for Coverage
 from mock import patch, MagicMock
-from jupyterlab_iframe.extension import load_jupyter_server_extension, IFrameHandler, ProxyHandler, ProxyWSHandler  # noqa: F401
+from jupyterlab_iframe.extension import (
+    load_jupyter_server_extension,
+    IFrameHandler,
+    ProxyHandler,
+)  # noqa: F401
 
 
 class TestExtension:
@@ -8,7 +12,7 @@ class TestExtension:
         m = MagicMock()
 
         m.web_app.settings = {}
-        m.web_app.settings['base_url'] = '/test'
+        m.web_app.settings["base_url"] = "/test"
         load_jupyter_server_extension(m)
 
     def test_handler(self):
@@ -30,6 +34,6 @@ class TestExtension:
         h = ProxyHandler(app, m)
         h._transforms = []
 
-        with patch('requests.get') as m2:
-            m2.return_value.text = 'test'
+        with patch("requests.get") as m2:
+            m2.return_value.text = "test"
             h.get()

@@ -14,10 +14,16 @@ class IFrameHandler(IPythonHandler):
 
     @tornado.web.authenticated
     def get(self):
-        self.set_header('Content-Type', 'application/json')
-        self.finish(json.dumps({'welcome': self.welcome,
-                                'sites': self.sites,
-                                'local_files': self.local_files}))
+        self.set_header("Content-Type", "application/json")
+        self.finish(
+            json.dumps(
+                {
+                    "welcome": self.welcome,
+                    "sites": self.sites,
+                    "local_files": self.local_files,
+                }
+            )
+        )
 
 
 class IFrameLocalFileHandler(IPythonHandler):
@@ -27,12 +33,12 @@ class IFrameLocalFileHandler(IPythonHandler):
 
     @tornado.web.authenticated
     def get(self):
-        path = self.get_argument('path')
+        path = self.get_argument("path")
         if path and (self.allow_any or path in self.local_files):
-            with open(path, 'r') as fp:
-                self.set_header('Content-Type', 'text/html')
+            with open(path, "r") as fp:
+                self.set_header("Content-Type", "text/html")
                 self.finish(fp.read())
-        raise tornado.web.HTTPError(404, 'Site not found:{}'.format(path))
+        raise tornado.web.HTTPError(404, "Site not found:{}".format(path))
 
 
 def load_jupyter_server_extension(nb_server_app):
@@ -43,28 +49,49 @@ def load_jupyter_server_extension(nb_server_app):
         nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
     """
     web_app = nb_server_app.web_app
-    sites = nb_server_app.config.get('JupyterLabIFrame', {}).get('iframes', [])
-    welcome = nb_server_app.config.get('JupyterLabIFrame', {}).get('welcome', '')
-    local_files = nb_server_app.config.get('JupyterLabIFrame', {}).get('local_files', '')
-    allow_any = nb_server_app.config.get('JupyterLabIFrame', {}).get('allow_any_local', True)
+    sites = nb_server_app.config.get("JupyterLabIFrame", {}).get("iframes", [])
+    welcome = nb_server_app.config.get("JupyterLabIFrame", {}).get("welcome", "")
+    local_files = nb_server_app.config.get("JupyterLabIFrame", {}).get(
+        "local_files", ""
+    )
+    allow_any = nb_server_app.config.get("JupyterLabIFrame", {}).get(
+        "allow_any_local", True
+    )
     local_files = [f for f in local_files if os.path.exists(f)]
 
-    host_pattern = '.*$'
-    base_url = web_app.settings['base_url']
+    host_pattern = ".*$"
+    base_url = web_app.settings["base_url"]
 
-    print('Installing jupyterlab_iframe handler on path %s' % url_path_join(base_url, 'iframes'))
-    print('Installing iframes: %s' % sites)
+    print(
+        "Installing jupyterlab_iframe handler on path %s"
+        % url_path_join(base_url, "iframes")
+    )
+    print("Installing iframes: %s" % sites)
 
     if welcome:
-        print('Installing welcome page: %s' % welcome)
+        print("Installing welcome page: %s" % welcome)
 
     if local_files:
-        print('Installing local files: %s' % local_files)
+        print("Installing local files: %s" % local_files)
         if allow_any:
-            print('WARNING: allowing any local file to be served as html in an iframe (via `JupyterLabIFrame.allow_any_local` configuration)')
+            print(
+                "WARNING: allowing any local file to be served as html in an iframe (via `JupyterLabIFrame.allow_any_local` configuration)"
+            )
 
-    web_app.add_handlers(host_pattern, [(url_path_join(base_url, 'iframes/'), IFrameHandler, {'welcome': welcome, 'sites': sites, 'local_files': local_files}),
-                                        (url_path_join(base_url, 'iframes/local'), IFrameLocalFileHandler, {'local_files': local_files, 'allow_any': allow_any}),
-                                        (url_path_join(base_url, 'iframes/proxy'), ProxyHandler),
-                                        (url_path_join(base_url, 'iframes/proxy'), ProxyWSHandler),
-                                        ])
+    web_app.add_handlers(
+        host_pattern,
+        [
+            (
+                url_path_join(base_url, "iframes/"),
+                IFrameHandler,
+                {"welcome": welcome, "sites": sites, "local_files": local_files},
+            ),
+            (
+                url_path_join(base_url, "iframes/local"),
+                IFrameLocalFileHandler,
+                {"local_files": local_files, "allow_any": allow_any},
+            ),
+            (url_path_join(base_url, "iframes/proxy"), ProxyHandler),
+            (url_path_join(base_url, "iframes/proxy"), ProxyWSHandler),
+        ],
+    )
