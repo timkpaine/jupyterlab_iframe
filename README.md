@@ -3,7 +3,7 @@
 Open a site in a widget, or add a set of "quicklinks".
 
 [![Build Status](https://github.com/timkpaine/jupyterlab_iframe/workflows/Build%20Status/badge.svg?branch=main)](https://github.com/timkpaine/jupyterlab_iframe/actions?query=workflow%3A%22Build+Status%22)
-[![codecov](https://codecov.io/gh/timkpaine/jupyterlab_iframe/branch/master/graph/badge.svg)](https://codecov.io/gh/timkpaine/jupyterlab_iframe)
+[![codecov](https://codecov.io/gh/timkpaine/jupyterlab_iframe/branch/master/main/badge.svg)](https://codecov.io/gh/timkpaine/jupyterlab_iframe)
 [![PyPI](https://img.shields.io/pypi/l/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
 [![PyPI](https://img.shields.io/pypi/v/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
 [![npm](https://img.shields.io/npm/v/jupyterlab_iframe.svg)](https://www.npmjs.com/package/jupyterlab_iframe)
