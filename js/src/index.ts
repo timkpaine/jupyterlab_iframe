@@ -25,6 +25,7 @@ import getFavicon from "./faviconFetcher";
 
 import "../style/index.css";
 import {fallbackSVG, openSiteSVG} from "./SVGAssets";
+import {canUrlBeIframed} from "./iframeUtils";
 
 let unique = 0;
 
@@ -34,6 +35,7 @@ const extension: JupyterFrontEndPlugin<void> = {
   id: "jupyterlab_iframe",
   requires: [ICommandPalette, ILauncher],
 };
+
 
 class IFrameWidget extends Widget {
   private local_file: boolean;
@@ -64,8 +66,9 @@ class IFrameWidget extends Widget {
       // External website
 
       // First try to get directly
-      request("get", path).then((res: IRequestResult) => {
-        if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
+      const proxiedPath = `${PageConfig.getBaseUrl()}iframes/proxy?path=${path}`;
+      canUrlBeIframed(proxiedPath).then((res: boolean) => {
+        if (res) {
           // Site does not disable iframe
 
           // eslint-disable-next-line no-console
@@ -84,35 +87,20 @@ class IFrameWidget extends Widget {
           });
 
         } else {
-          // Site is blocked for some reason, so attempt to proxy through python.
-          // Reasons include: disallowing iframes, http/https mismatch, etc
+          const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", path).href}`;
 
+          path = `iframes/proxy?path=${encodeURI(path)}`;
+          iframe.src = PageConfig.getBaseUrl() + path;
           // eslint-disable-next-line no-console
-          console.log("site failed with code " + res.status.toString());
+          console.log(`setting proxy for ${path}`);
 
-          // eslint-disable-next-line no-empty
-          if (res.status === 404) {
-            // nothing we can do
-            // eslint-disable-next-line no-empty
-          } else if (res.status === 401) {
-            // nothing we can do
-          } else {
-            // otherwise try to proxy
-            const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", path).href}`;
-
-            path = `iframes/proxy?path=${encodeURI(path)}`;
-            iframe.src = PageConfig.getBaseUrl() + path;
-            // eslint-disable-next-line no-console
-            console.log(`setting proxy for ${path}`);
-
-            request("get", favicon_url).then((res2: IRequestResult) => {
-              if (res2.ok) {
-                const style = document.createElement("style");
-                style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
-                document.head.appendChild(style);
-              }
-            });
-          }
+          request("get", favicon_url).then((res2: IRequestResult) => {
+            if (res2.ok) {
+              const style = document.createElement("style");
+              style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+              document.head.appendChild(style);
+            }
+          });
         }
       });
     } else {
@@ -157,10 +145,13 @@ class OpenIFrameWidget extends Widget {
 
 async function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string, launcher: ILauncher): Promise<void> {
   const command = "iframe:open-" + site;
+  const proxiedPath = `${PageConfig.getBaseUrl()}iframes/proxy?path=${site}`;
   let iconSvg;
   try{
-    iconSvg = await getFavicon(site);
+    iconSvg = await getFavicon(proxiedPath);
   }catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
     iconSvg = fallbackSVG;
   }
   const siteIcon = new LabIcon({

@@ -19,20 +19,27 @@ const getSiteDom = async (url: string): Promise<Document> => fetch(url).then(asy
 });
 
 const getFavicon = async (site: string): Promise<string> => {
-  let faviconUrl: string;
+  let faviconUri: string;
   const dom = await getSiteDom(site);
   const nodeList = dom.getElementsByTagName("link");
   // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < nodeList.length; i++) {
-    if ((nodeList[i].getAttribute("rel") === "icon") || (nodeList[i].getAttribute("rel") === "shortcut icon")) {
-      faviconUrl = nodeList[i].getAttribute("href");
+    if ((nodeList[i].getAttribute("rel").includes("icon"))){
+      faviconUri = nodeList[i].getAttribute("href");
       break;
     }
   }
-  if (typeof faviconUrl == "undefined"){
+  if (typeof faviconUri == "undefined"){
     throw new FaviconNotFoundError(site);
   }
-  const data = await pixels(site + faviconUrl);
+  let siteUrl = new URL(site);
+  if (siteUrl.pathname === "/iframes/proxy"){
+    const faviconUrl = `${new URL(faviconUri, siteUrl.searchParams.get("path")).href}`;
+    siteUrl.searchParams.set("path", faviconUrl);
+  } else {
+    siteUrl = new URL(faviconUri);
+  }
+  const data = await pixels(siteUrl.href);
   const unscaledSvg = imagedataToSVG(data);
   return await scale(unscaledSvg, { scale: 52 / data.width });
 };
