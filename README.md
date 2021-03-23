@@ -29,6 +29,9 @@ install the server extension, and add the following to `jupyter_notebook_config.
 c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
 ```
 
+The sites will optionally appear in the launcher as the site's icon (note, some icons might not be retrieved successfully).
+![](https://raw.githubusercontent.com/timkpaine/jupyterlab_iframe/main/docs/static_links_on_launcher.png)
+
 In this example, `list`, `of`, and `sites` will be available as links in the command palette.
 
 ### Landing page on initial page load
@@ -37,6 +40,7 @@ In this example, `list`, `of`, and `sites` will be available as links in the com
 c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
 c.JupyterLabIFrame.welcome = 'a site to show on initial load'
 c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
+c.JupyterLabIFrame.show_in_launcher = True
 ```
 
 In this example, `a site` will open by default the first time JupyterLab is opened.

@@ -19,7 +19,15 @@ import {
   IRequestResult, request,
 } from "requests-helper";
 
+import {ILauncher} from "@jupyterlab/launcher";
+import {LabIcon} from "@jupyterlab/ui-components";
+
+import {getFavicon} from "./favicon";
+import {canUrlBeIframed} from "./utils";
+
 import "../style/index.css";
+import fallbackSVG from "./img/fallback.svg";
+import openSiteSVG from "./img/open.svg";
 
 let unique = 0;
 
@@ -27,8 +35,9 @@ const extension: JupyterFrontEndPlugin<void> = {
   activate,
   autoStart: true,
   id: "jupyterlab_iframe",
-  requires: [ICommandPalette],
+  requires: [ICommandPalette, ILauncher],
 };
+
 
 class IFrameWidget extends Widget {
   private local_file: boolean;
@@ -45,7 +54,6 @@ class IFrameWidget extends Widget {
 
     unique += 1;
 
-
     if (!this.local_file && !path.startsWith("http")) {
       // use https, its 2020
       path = "https://" + path;
@@ -59,8 +67,9 @@ class IFrameWidget extends Widget {
       // External website
 
       // First try to get directly
-      request("get", path).then((res: IRequestResult) => {
-        if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
+      const proxiedPath = `${PageConfig.getBaseUrl()}iframes/proxy?path=${path}`;
+      canUrlBeIframed(proxiedPath).then((res: boolean) => {
+        if (res) {
           // Site does not disable iframe
 
           // eslint-disable-next-line no-console
@@ -79,35 +88,20 @@ class IFrameWidget extends Widget {
           });
 
         } else {
-          // Site is blocked for some reason, so attempt to proxy through python.
-          // Reasons include: disallowing iframes, http/https mismatch, etc
+          const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", path).href}`;
 
+          path = `iframes/proxy?path=${encodeURI(path)}`;
+          iframe.src = PageConfig.getBaseUrl() + path;
           // eslint-disable-next-line no-console
-          console.log("site failed with code " + res.status.toString());
+          console.log(`setting proxy for ${path}`);
 
-          // eslint-disable-next-line no-empty
-          if (res.status === 404) {
-          // nothing we can do
-          // eslint-disable-next-line no-empty
-          } else if (res.status === 401) {
-          // nothing we can do
-          } else {
-            // otherwise try to proxy
-            const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", path).href}`;
-
-            path = `iframes/proxy?path=${encodeURI(path)}`;
-            iframe.src = PageConfig.getBaseUrl() + path;
-            // eslint-disable-next-line no-console
-            console.log(`setting proxy for ${path}`);
-
-            request("get", favicon_url).then((res2: IRequestResult) => {
-              if (res2.ok) {
-                const style = document.createElement("style");
-                style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
-                document.head.appendChild(style);
-              }
-            });
-          }
+          request("get", favicon_url).then((res2: IRequestResult) => {
+            if (res2.ok) {
+              const style = document.createElement("style");
+              style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+              document.head.appendChild(style);
+            }
+          });
         }
       });
     } else {
@@ -150,8 +144,21 @@ class OpenIFrameWidget extends Widget {
   }
 }
 
-function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string) {
+async function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string, launcher: ILauncher, show_in_launcher: boolean): Promise<void> {
   const command = "iframe:open-" + site;
+  const proxiedPath = `${PageConfig.getBaseUrl()}iframes/proxy?path=${site}`;
+  let iconSvg;
+  try{
+    iconSvg = await getFavicon(proxiedPath);
+  }catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    iconSvg = fallbackSVG;
+  }
+  const siteIcon = new LabIcon({
+    name: `icon:${site}`,
+    svgstr: iconSvg,
+  });
 
   app.commands.addCommand(command, {
     execute: () => {
@@ -159,20 +166,28 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
       app.shell.add(widget);
       app.shell.activateById(widget.id);
     },
+    icon: siteIcon,
     isEnabled: () => true,
     label: "Open " + site,
   });
   palette.addItem({command, category: "Sites"});
+
+  if (show_in_launcher) {
+    launcher.add({command, category: "Sites"});
+  }
 }
 
-function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
+function activate(app: JupyterFrontEnd, palette: ICommandPalette, launcher: ILauncher): void {
 
   // Declare a widget variable
   let widget: IFrameWidget;
 
   // Add an application command
   const open_command = "iframe:open";
-
+  const openSiteIcon = new LabIcon({
+    name: "icon:open",
+    svgstr: openSiteSVG,
+  });
   app.commands.addCommand(open_command, {
     execute: (args) => {
       let path = typeof args.path === "undefined" ? "" : (args.path as string);
@@ -202,12 +217,15 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
         app.shell.activateById(widget.id);
       }
     },
+    icon: openSiteIcon,
     isEnabled: () => true,
     label: "Open IFrame",
   });
 
   // Add the command to the palette.
   palette.addItem({command: open_command, category: "Sites"});
+  launcher.add({command: open_command, rank: 1, category: "Sites"});
+
 
   // grab sites from serverextension
   request("get", PageConfig.getBaseUrl() + "iframes/").then((res: IRequestResult) => {
@@ -215,6 +233,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
       const jsn: any = res.json();
       const welcome = jsn.welcome;
       const local_files = jsn.local_files;
+      const show_in_launcher = jsn.show_in_launcher;
 
       let welcome_included = false;
 
@@ -228,7 +247,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
           welcome_included = true;
         }
         if (site) {
-          registerSite(app, palette, site);
+          registerSite(app, palette, site, launcher, show_in_launcher);
         }
       }
 
@@ -242,14 +261,14 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
           welcome_included = true;
         }
         if (actual_site) {
-          registerSite(app, palette, actual_site);
+          registerSite(app, palette, actual_site, launcher, show_in_launcher);
         }
       }
 
 
       if (!welcome_included) {
         if (welcome !== "") {
-          registerSite(app, palette, welcome);
+          registerSite(app, palette, welcome, launcher, show_in_launcher);
         }
       }
 
