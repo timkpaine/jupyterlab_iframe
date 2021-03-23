@@ -28,6 +28,8 @@ install the server extension, and add the following to `jupyter_notebook_config.
 ```python3
 c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
 ```
+The sites will appear in the launcher as the site's icon. Some icons might not be retrieved successfully
+![](https://raw.githubusercontent.com/ofekengel/jupyterlab_iframe/feature/sites-appear-in-launcher-with-icons/docs/static_links_on_launcher.PNG)
 
 In this example, `list`, `of`, and `sites` will be available as links in the command palette.
 
