@@ -19,17 +19,19 @@ const getSiteDom = async (url: string): Promise<Document> => fetch(url).then(asy
 export const getFavicon = async (site: string): Promise<string> => {
   let faviconUri: string;
   const dom = await getSiteDom(site);
-  const nodeList = dom.getElementsByTagName("link");
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
-  for (let i = 0; i < nodeList.length; i++) {
-    if ((nodeList[i].getAttribute("rel").includes("icon"))){
-      faviconUri = nodeList[i].getAttribute("href");
+  const nodeList = Array.prototype.slice.call(dom.getElementsByTagName("link"), 0);
+
+  for (let node of nodeList) {
+    if ((node.getAttribute("rel").includes("icon"))){
+      faviconUri = node.getAttribute("href");
       break;
     }
   }
+
   if (typeof faviconUri == "undefined"){
     throw new FaviconNotFoundError(site);
   }
+
   let siteUrl = new URL(site);
   if (siteUrl.pathname === "/iframes/proxy"){
     const faviconUrl = `${new URL(faviconUri, siteUrl.searchParams.get("path")).href}`;
@@ -39,5 +41,5 @@ export const getFavicon = async (site: string): Promise<string> => {
   }
   const data = await pixels(siteUrl.href);
   const unscaledSvg = imagedataToSVG(data);
-  return await scale(unscaledSvg, { scale: 52 / data.width });
+  return scale(unscaledSvg, { scale: 52 / data.width });
 };
