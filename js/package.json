@@ -43,7 +43,6 @@
     "@jupyterlab/launcher": "^3.0.2",
     "@lumino/disposable": "^1.1.2",
     "@types/node": "^14.14.22",
-    "axios": "^0.21.1",
     "image-pixels": "^2.2.2",
     "imagetracerjs": "^1.2.6",
     "requests-helper": "^0.1.5",

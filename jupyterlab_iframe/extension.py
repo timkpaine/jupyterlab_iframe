@@ -1,16 +1,19 @@
 import json
 import os.path
+
 import tornado.web
 from notebook.base.handlers import IPythonHandler
 from notebook.utils import url_path_join
+
 from .proxy import ProxyHandler, ProxyWSHandler
 
 
 class IFrameHandler(IPythonHandler):
-    def initialize(self, welcome=None, sites=None, local_files=None):
+    def initialize(self, welcome=None, sites=None, local_files=None, show_in_launcher=False):
         self.sites = sites
         self.welcome = welcome
         self.local_files = local_files
+        self.show_in_launcher = show_in_launcher
 
     @tornado.web.authenticated
     def get(self):
@@ -21,6 +24,7 @@ class IFrameHandler(IPythonHandler):
                     "welcome": self.welcome,
                     "sites": self.sites,
                     "local_files": self.local_files,
+                    "show_in_launcher": self.show_in_launcher,
                 }
             )
         )
@@ -51,6 +55,7 @@ def load_jupyter_server_extension(nb_server_app):
     web_app = nb_server_app.web_app
     sites = nb_server_app.config.get("JupyterLabIFrame", {}).get("iframes", [])
     welcome = nb_server_app.config.get("JupyterLabIFrame", {}).get("welcome", "")
+    show_in_launcher = nb_server_app.config.get("JupyterLabIFrame", {}).get("show_in_launcher", False)
     local_files = nb_server_app.config.get("JupyterLabIFrame", {}).get(
         "local_files", ""
     )
@@ -84,7 +89,7 @@ def load_jupyter_server_extension(nb_server_app):
             (
                 url_path_join(base_url, "iframes/"),
                 IFrameHandler,
-                {"welcome": welcome, "sites": sites, "local_files": local_files},
+                {"welcome": welcome, "sites": sites, "local_files": local_files, "show_in_launcher": show_in_launcher},
             ),
             (
                 url_path_join(base_url, "iframes/local"),

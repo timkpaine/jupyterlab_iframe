@@ -20,12 +20,14 @@ import {
 } from "requests-helper";
 
 import {ILauncher} from "@jupyterlab/launcher";
-import { LabIcon } from "@jupyterlab/ui-components";
-import getFavicon from "./faviconFetcher";
+import {LabIcon} from "@jupyterlab/ui-components";
+
+import {getFavicon} from "./favicon";
+import {canUrlBeIframed} from "./utils";
 
 import "../style/index.css";
-import {fallbackSVG, openSiteSVG} from "./SVGAssets";
-import {canUrlBeIframed} from "./iframeUtils";
+import fallbackSVG from "./img/fallback.svg";
+import openSiteSVG from "./img/open.svg";
 
 let unique = 0;
 
@@ -51,7 +53,6 @@ class IFrameWidget extends Widget {
     this.local_file = path.startsWith("local://");
 
     unique += 1;
-
 
     if (!this.local_file && !path.startsWith("http")) {
       // use https, its 2020
@@ -143,7 +144,7 @@ class OpenIFrameWidget extends Widget {
   }
 }
 
-async function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string, launcher: ILauncher): Promise<void> {
+async function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string, launcher: ILauncher, show_in_launcher: boolean): Promise<void> {
   const command = "iframe:open-" + site;
   const proxiedPath = `${PageConfig.getBaseUrl()}iframes/proxy?path=${site}`;
   let iconSvg;
@@ -170,7 +171,10 @@ async function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site
     label: "Open " + site,
   });
   palette.addItem({command, category: "Sites"});
-  launcher.add({command, category: "Sites"});
+
+  if (show_in_launcher) {
+    launcher.add({command, category: "Sites"});
+  }
 }
 
 function activate(app: JupyterFrontEnd, palette: ICommandPalette, launcher: ILauncher): void {
@@ -229,6 +233,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, launcher: ILau
       const jsn: any = res.json();
       const welcome = jsn.welcome;
       const local_files = jsn.local_files;
+      const show_in_launcher = jsn.show_in_launcher;
 
       let welcome_included = false;
 
@@ -242,7 +247,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, launcher: ILau
           welcome_included = true;
         }
         if (site) {
-          registerSite(app, palette, site, launcher);
+          registerSite(app, palette, site, launcher, show_in_launcher);
         }
       }
 
@@ -256,14 +261,14 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette, launcher: ILau
           welcome_included = true;
         }
         if (actual_site) {
-          registerSite(app, palette, actual_site, launcher);
+          registerSite(app, palette, actual_site, launcher, show_in_launcher);
         }
       }
 
 
       if (!welcome_included) {
         if (welcome !== "") {
-          registerSite(app, palette, welcome, launcher);
+          registerSite(app, palette, welcome, launcher, show_in_launcher);
         }
       }
 

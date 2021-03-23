@@ -1,9 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const imagedataToSVG = require("imagetracerjs").imagedataToSVG;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pixels = require("image-pixels");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const scale = require("scale-that-svg");
+
+import {imagedataToSVG} from "imagetracerjs";
+import pixels from "image-pixels";
+import scale from "scale-that-svg";
 
 class FaviconNotFoundError extends Error{
   public constructor(message: string){
@@ -18,7 +16,7 @@ const getSiteDom = async (url: string): Promise<Document> => fetch(url).then(asy
   return parser.parseFromString(await res.text(), "text/xml");
 });
 
-const getFavicon = async (site: string): Promise<string> => {
+export const getFavicon = async (site: string): Promise<string> => {
   let faviconUri: string;
   const dom = await getSiteDom(site);
   const nodeList = dom.getElementsByTagName("link");
@@ -43,5 +41,3 @@ const getFavicon = async (site: string): Promise<string> => {
   const unscaledSvg = imagedataToSVG(data);
   return await scale(unscaledSvg, { scale: 52 / data.width });
 };
-
-export default getFavicon;

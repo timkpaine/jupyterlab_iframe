@@ -12,5 +12,5 @@
     "lib": ["es5", "es2015.promise", "dom", "es2015.collection", "es2015.iterable", "es2015.core"],
     "types": ["jest", "node"]
   },
-  "include": ["src/*"]
+  "include": ["src/*", "src/img/svg.d.ts"]
 }
