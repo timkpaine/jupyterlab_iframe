@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "build:lab": "rimraf ../lab-dist && mkdirp ../lab-dist && cd ../lab-dist && npm pack ../js/",
+    "build:lab": "rimraf ../jupyterlab_iframe/labextension && jupyter labextension build .",
     "build:all": "npm run build && npm run build:lab",
     "clean": "rimraf lib",
     "fix": "eslint -c .eslintrc.js --ext .ts --fix src/ tests/",
@@ -24,7 +24,8 @@
     "style/**/*.css"
   ],
   "jupyterlab": {
-    "extension": true,
+    "extension": "lib/index.js",
+    "outputDir": "../jupyterlab_iframe/labextension",
     "discovery": {
       "server": {
         "base": {
@@ -45,6 +46,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.5.5",
+    "@jupyterlab/builder": "^3.0.6",
     "@types/jest": "^24.0.4",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/eslint-plugin-tslint": "^2.34.0",
