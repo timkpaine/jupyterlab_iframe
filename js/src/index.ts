@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import {
-  ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin,
+  JupyterFrontEnd, JupyterFrontEndPlugin,
 } from "@jupyterlab/application";
 
 import {
@@ -10,10 +10,6 @@ import {
 import {
   PageConfig,
 } from "@jupyterlab/coreutils";
-
-import {
-  IDocumentManager,
-} from "@jupyterlab/docmanager";
 
 import {
   Widget,
@@ -31,7 +27,7 @@ const extension: JupyterFrontEndPlugin<void> = {
   activate,
   autoStart: true,
   id: "jupyterlab_iframe",
-  requires: [IDocumentManager, ICommandPalette, ILayoutRestorer],
+  requires: [ICommandPalette],
 };
 
 class IFrameWidget extends Widget {
@@ -169,7 +165,7 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
   palette.addItem({command, category: "Sites"});
 }
 
-function activate(app: JupyterFrontEnd, docManager: IDocumentManager, palette: ICommandPalette, restorer: ILayoutRestorer) {
+function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
 
   // Declare a widget variable
   let widget: IFrameWidget;
