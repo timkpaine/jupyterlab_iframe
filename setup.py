@@ -24,7 +24,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read().replace("\r\n", "\n")
 
 requires = [
-    "jupyterlab>=2.0.0",
+    "jupyterlab>=3.0.0",
     "requests>=2.22.0",
     "tornado>=6.0.0",
     "tornado-proxy-handlers>=0.0.4",
