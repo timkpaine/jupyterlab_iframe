@@ -45,7 +45,11 @@ requires_dev = requires + [
 
 data_spec = [
     # Lab extension installed by default:
-    ("share/jupyter/lab/extensions", "jupyterlab_iframe/labextension", "**"),
+    (
+        "share/jupyter/labextensions/jupyterlab_iframe",
+        "jupyterlab_iframe/labextension",
+        "**",
+    ),
     # Config to enable server extension by default:
     ("etc/jupyter/jupyter_server_config.d", "jupyter-config", "*.json"),
 ]
