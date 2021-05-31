@@ -1,5 +1,5 @@
-// eslint-disable no-console
-// eslint-disable no-empty
+/* eslint-disable no-console */
+/* eslint-disable no-empty */
 import { PageConfig } from "@jupyterlab/coreutils";
 
 import { Widget } from "@lumino/widgets";

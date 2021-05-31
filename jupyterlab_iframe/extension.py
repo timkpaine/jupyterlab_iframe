@@ -17,8 +17,11 @@ class IFrameHandler(IPythonHandler):
     @tornado.web.authenticated
     def get(self):
         path = self.get_argument("path", "")
-        if path.startswith("local://") and (self.allow_any or path in self.allowed_sites):
+        if path.startswith("local://") and (
+            self.allow_any or path in self.allowed_sites
+        ):
             # allowed site or local site
+            path = path.replace("local://", "")
             try:
                 with open(path, "r") as fp:
                     self.set_header("Content-Type", "text/html")
@@ -64,7 +67,14 @@ def load_jupyter_server_extension(nb_server_app):
         s["customIcon"] = s.get("customIcon", "")
 
     # validate local files
-    sites = [s for s in sites if not s["path"].startswith("local://") or os.path.exists(s["path"].replace("local://", ""))]
+    sites = [
+        s
+        for s in sites
+        if (
+            not s["path"].startswith("local://")
+            or os.path.exists(s["path"].replace("local://", ""))
+        )
+    ]
 
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
@@ -84,7 +94,7 @@ def load_jupyter_server_extension(nb_server_app):
         host_pattern,
         [
             (
-                url_path_join(base_url, "iframes/"),
+                url_path_join(base_url, "iframes"),
                 IFrameHandler,
                 {"sites": sites, "allow_any": allow_any},
             ),

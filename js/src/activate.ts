@@ -1,6 +1,5 @@
-import {
-  JupyterFrontEnd,
-} from "@jupyterlab/application";
+/* eslint-disable no-console */
+import { JupyterFrontEnd } from "@jupyterlab/application";
 
 import { Dialog, ICommandPalette, showDialog } from "@jupyterlab/apputils";
 import { ILauncher } from "@jupyterlab/launcher";
@@ -9,11 +8,20 @@ import { PageConfig } from "@jupyterlab/coreutils";
 
 import { IRequestResult, request } from "requests-helper";
 
-import {OpenIFrameWidget} from "./dialog";
-import {IFrameWidget} from "./iframe";
-import {Site, addCommandPaletteSite, addLauncherSite, addPageLoadSite} from "./commands";
+import { OpenIFrameWidget } from "./dialog";
+import { IFrameWidget } from "./iframe";
+import {
+  Site,
+  addCommandPaletteSite,
+  addLauncherSite,
+  addPageLoadSite,
+} from "./commands";
 
-export async function activate(app: JupyterFrontEnd, launcher: ILauncher, palette: ICommandPalette): Promise<void> {
+export async function activate(
+  app: JupyterFrontEnd,
+  launcher: ILauncher,
+  palette: ICommandPalette,
+): Promise<void> {
   // Declare a widget variable
   let widget: IFrameWidget;
 
@@ -44,13 +52,10 @@ export async function activate(app: JupyterFrontEnd, launcher: ILauncher, palett
         widget = new IFrameWidget(path);
         app.shell.add(widget);
         app.shell.activateById(widget.id);
-
       } else {
-
         widget = new IFrameWidget(path);
         app.shell.add(widget);
         app.shell.activateById(widget.id);
-
       }
     },
     isEnabled: () => true,
@@ -63,15 +68,14 @@ export async function activate(app: JupyterFrontEnd, launcher: ILauncher, palett
   // grab sites from serverextension
   const res: IRequestResult = await request(
     "get",
-    `${PageConfig.getBaseUrl()}iframes/`
+    `${PageConfig.getBaseUrl()}iframes/`,
   );
 
   if (res.ok) {
-    const jsn: {[site: string]: Site[]} = res.json();
-    const {sites} = jsn;
+    const jsn: { [site: string]: Site[] } = res.json();
+    const { sites } = jsn;
 
     for (const site of sites) {
-      console.log(site);
       // add to command palette
       addCommandPaletteSite(site, app, palette);
 
