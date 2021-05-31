@@ -1,3 +1,5 @@
+// eslint-disable no-console
+// eslint-disable no-empty
 import { PageConfig } from "@jupyterlab/coreutils";
 
 import { Widget } from "@lumino/widgets";
@@ -22,8 +24,8 @@ export class IFrameWidget extends Widget {
     unique += 1;
 
     if (!this.local_file && !path.startsWith("http")) {
-      // use https, its 2020
-      path = "https://" + path;
+      // use https, its the twenty first century
+      path = `https://${path}`;
     }
 
     const div = document.createElement("div");
@@ -37,8 +39,6 @@ export class IFrameWidget extends Widget {
       request("get", path).then(async (res: IRequestResult) => {
         if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
           // Site does not disable iframe
-
-          // eslint-disable-next-line no-console
           console.log("site accessible: proceeding");
 
           iframe.src = path;
@@ -55,13 +55,10 @@ export class IFrameWidget extends Widget {
           // Site is blocked for some reason, so attempt to proxy through python.
           // Reasons include: disallowing iframes, http/https mismatch, etc
 
-          // eslint-disable-next-line no-console
-          console.log("site failed with code " + res.status.toString());
+          console.log(`site failed with code ${res.status.toString()}`);
 
-          // eslint-disable-next-line no-empty
           if (res.status === 404) {
             // nothing we can do
-            // eslint-disable-next-line no-empty
           } else if (res.status === 401) {
             // nothing we can do
           } else {
@@ -87,9 +84,9 @@ export class IFrameWidget extends Widget {
     } else {
       // Local file, replace url and query for local
       // eslint-disable-next-line no-console
-      console.log("fetching local file " + path);
-      path = `iframes/local?path=${encodeURI(path.replace("local://", ""))}`;
-      iframe.src = PageConfig.getBaseUrl() + path;
+      console.log(`fetching local file ${path}`);
+      path = `iframes?path=${encodeURI(path)}`;
+      iframe.src = `${PageConfig.getBaseUrl()}${path}`;
     }
 
     div.appendChild(iframe);

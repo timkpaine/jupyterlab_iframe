@@ -24,8 +24,8 @@ Install the server extension, and add the following to `jupyter_notebook_config.
 
 ```python3
 c.JupyterLabIFrame.sites = [
-    {"path": "http://tim.paine.nyc", "openOnLoad": False, "launcher": False, "commandPalette": True},
-    {"path": "local://path/to/local/file", "openOnLoad": True, "launcher": True, "commandPalette": True},
+    {"path": "http://tim.paine.nyc", "openOnLoad": False, "launcher": False},
+    {"path": "local://path/to/local/file", "openOnLoad": True, "launcher": True},
     ...
 ```
 
@@ -33,7 +33,6 @@ Each entry has a few options:
 - `path`: **Required** the URL of the site. Use `local://` for files on the local filesystem.
 - `openOnLoad` (Default: `False`): Open the iframe the first time JupyterLab is opened (formerly called `welcome`).
 - `launcher` (Default: `False`): Create an icon in the launcher.
-- `commandPalette`  (Default: `True`): Create an entry in the command palette.
 
 Any files specified as local will be served up as local links. By default any file on the filesystem is allowed, to disable this and only allow the items designated in the list above, set `c.JupyterLabIFrame.allow_any_local = False`.
 

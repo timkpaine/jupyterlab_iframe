@@ -3,6 +3,7 @@ import {
 } from "@jupyterlab/application";
 
 import { Dialog, ICommandPalette, showDialog } from "@jupyterlab/apputils";
+import { ILauncher } from "@jupyterlab/launcher";
 
 import { PageConfig } from "@jupyterlab/coreutils";
 
@@ -10,9 +11,9 @@ import { IRequestResult, request } from "requests-helper";
 
 import {OpenIFrameWidget} from "./dialog";
 import {IFrameWidget} from "./iframe";
+import {Site, addCommandPaletteSite, addLauncherSite, addPageLoadSite} from "./commands";
 
-
-export async function activate(app: JupyterFrontEnd, palette: ICommandPalette): null {
+export async function activate(app: JupyterFrontEnd, launcher: ILauncher, palette: ICommandPalette): Promise<void> {
   // Declare a widget variable
   let widget: IFrameWidget;
 
@@ -30,6 +31,7 @@ export async function activate(app: JupyterFrontEnd, palette: ICommandPalette): 
           focusNodeSelector: "input",
           title: "Open site",
         });
+
         if (result.button.label === "Cancel") {
           return;
         }
@@ -37,14 +39,18 @@ export async function activate(app: JupyterFrontEnd, palette: ICommandPalette): 
         if (!result.value) {
           return null;
         }
+
         path = result.value;
         widget = new IFrameWidget(path);
         app.shell.add(widget);
         app.shell.activateById(widget.id);
+
       } else {
+
         widget = new IFrameWidget(path);
         app.shell.add(widget);
         app.shell.activateById(widget.id);
+
       }
     },
     isEnabled: () => true,
@@ -57,57 +63,28 @@ export async function activate(app: JupyterFrontEnd, palette: ICommandPalette): 
   // grab sites from serverextension
   const res: IRequestResult = await request(
     "get",
-    PageConfig.getBaseUrl() + "iframes/"
+    `${PageConfig.getBaseUrl()}iframes/`
   );
+
   if (res.ok) {
-    const jsn: any = res.json();
-    const welcome = jsn.welcome;
-    const local_files = jsn.local_files;
-
-    let welcome_included = false;
-
-    const sites = jsn.sites;
+    const jsn: {[site: string]: Site[]} = res.json();
+    const {sites} = jsn;
 
     for (const site of sites) {
-      // eslint-disable-next-line no-console
-      console.log("adding quicklink for " + site);
+      console.log(site);
+      // add to command palette
+      addCommandPaletteSite(site, app, palette);
 
-      if (site === welcome) {
-        welcome_included = true;
+      if (site.openOnLoad) {
+        // open on page load
+        addPageLoadSite(site, app);
       }
-      if (site) {
-        registerSite(app, palette, site);
-      }
-    }
 
-    for (const site of local_files) {
-      const actual_site = `local://${site}`;
-
-      // eslint-disable-next-line no-console
-      console.log("adding quicklink for " + actual_site);
-
-      if (actual_site === welcome) {
-        welcome_included = true;
-      }
-      if (actual_site) {
-        registerSite(app, palette, actual_site);
-      }
-    }
-
-    if (!welcome_included) {
-      if (welcome !== "") {
-        registerSite(app, palette, welcome);
-      }
-    }
-
-    if (welcome) {
-      await app.restored;
-      if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
-        localStorage.setItem("jupyterlab_iframe_welcome", "false");
-        app.commands.execute("iframe:open-" + welcome);
+      if (site.launcher) {
+        // add to launcher
+        addLauncherSite(site, app, launcher);
       }
     }
   }
-  // eslint-disable-next-line no-console
   console.log("JupyterLab extension jupyterlab_iframe is activated!");
 }
