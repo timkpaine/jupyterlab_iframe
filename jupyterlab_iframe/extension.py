@@ -1,8 +1,10 @@
 import json
 import os.path
+
 import tornado.web
 from notebook.base.handlers import IPythonHandler
 from notebook.utils import url_path_join
+
 from .proxy import ProxyHandler, ProxyWSHandler
 
 
@@ -54,7 +56,7 @@ def load_jupyter_server_extension(nb_server_app):
         nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
     """
     web_app = nb_server_app.web_app
-    sites = nb_server_app.config.get("JupyterLabIFrame", {}).get("iframes", [])
+    sites = nb_server_app.config.get("JupyterLabIFrame", {}).get("sites", [])
     welcome = nb_server_app.config.get("JupyterLabIFrame", {}).get("welcome", "")
     local_files = nb_server_app.config.get("JupyterLabIFrame", {}).get(
         "local_files", ""
