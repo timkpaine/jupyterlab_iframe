@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import {
-  JupyterFrontEnd, JupyterFrontEndPlugin,
+  ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin,
 } from "@jupyterlab/application";
 
 import {
-  Dialog, ICommandPalette, showDialog,
+  Dialog, ICommandPalette, MainAreaWidget, showDialog, WidgetTracker,
 } from "@jupyterlab/apputils";
 
 import {
@@ -23,15 +23,16 @@ import "../style/index.css";
 
 let unique = 0;
 
-const extension: JupyterFrontEndPlugin<void> = {
+const extension: JupyterFrontEndPlugin<WidgetTracker> = {
   activate,
   autoStart: true,
   id: "jupyterlab_iframe",
-  requires: [ICommandPalette],
+  requires: [ICommandPalette, ILayoutRestorer],
 };
 
 class IFrameWidget extends Widget {
   private local_file: boolean;
+  public path: string;
 
   public constructor(path: string) {
     super();
@@ -118,7 +119,7 @@ class IFrameWidget extends Widget {
       iframe.src = PageConfig.getBaseUrl() + path;
 
     }
-
+    this.path = path;
     div.appendChild(iframe);
     this.node.appendChild(div);
   }
@@ -165,18 +166,33 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
   palette.addItem({command, category: "Sites"});
 }
 
-function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
+function activate(app: JupyterFrontEnd, palette: ICommandPalette, restorer: ILayoutRestorer) {
 
   // Declare a widget variable
-  let widget: IFrameWidget;
+  let widget: MainAreaWidget<IFrameWidget>;
 
   // Add an application command
   const open_command = "iframe:open";
+  const handleWidget = (path: string) => {
+    const content = new IFrameWidget(path);
+    widget = new MainAreaWidget({content});
+
+    if (!tracker.has(widget)) {
+      // Track the state of the widget for later restoration
+      tracker.add(widget);
+    }
+    if (!widget.isAttached) {
+      // Attach the widget to the main work area if it's not there
+      app.shell.add(widget, 'main');
+    }
+    widget.update();
+    // Activate the widget
+    app.shell.activateById(widget.id);
+  }
 
   app.commands.addCommand(open_command, {
     execute: (args) => {
       let path = typeof args.path === "undefined" ? "" : (args.path as string);
-
       if (path === "") {
         showDialog({
           body: new OpenIFrameWidget(),
@@ -192,14 +208,10 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
             return null;
           }
           path =  result.value;
-          widget = new IFrameWidget(path);
-          app.shell.add(widget);
-          app.shell.activateById(widget.id);
+          handleWidget(path)
         });
       } else {
-        widget = new IFrameWidget(path);
-        app.shell.add(widget);
-        app.shell.activateById(widget.id);
+        handleWidget(path);
       }
     },
     isEnabled: () => true,
@@ -208,6 +220,16 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
 
   // Add the command to the palette.
   palette.addItem({command: open_command, category: "Sites"});
+
+  // Track and restore the widget state
+  let tracker = new WidgetTracker<MainAreaWidget<IFrameWidget>>({
+    namespace: 'iframe'
+  });
+  restorer.restore(tracker, {
+    command: open_command,
+    name: () => widget.content.path,
+    args: widget => ({path: widget.content.path})
+  });
 
   // grab sites from serverextension
   request("get", PageConfig.getBaseUrl() + "iframes/").then((res: IRequestResult) => {
@@ -265,6 +287,7 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
   });
   // eslint-disable-next-line no-console
   console.log("JupyterLab extension jupyterlab_iframe is activated!");
+  return tracker
 }
 
 export default extension;
