@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab_iframe",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "IFrame widgets for JupyterLab",
   "author": "Tim Paine",
   "main": "lib/index.js",
