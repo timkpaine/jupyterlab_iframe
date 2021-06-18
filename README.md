@@ -20,43 +20,26 @@ jupyter serverextension enable --py jupyterlab_iframe
 ```
 
 ## Options
-
-### External Sites
-
-install the server extension, and add the following to `jupyter_notebook_config.py`
+Install the server extension, and add the following to `jupyter_notebook_config.py`
 
 ```python3
-c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
+c.JupyterLabIFrame.sites = [
+    {"path": "http://tim.paine.nyc", "openOnLoad": False, "launcher": False},
+    {"path": "local://path/to/local/file", "openOnLoad": True, "launcher": True},
+    ...
 ```
 
-In this example, `list`, `of`, and `sites` will be available as links in the command palette.
+Each entry has a few options:
+- `path`: **Required** the URL of the site. Use `local://` for files on the local filesystem.
+- `openOnLoad` (Default: `False`): Open the iframe the first time JupyterLab is opened (formerly called `welcome`).
+- `launcher` (Default: `False`): Create an icon in the launcher.
 
-### Landing page on initial page load
-
-```python3
-c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
-c.JupyterLabIFrame.welcome = 'a site to show on initial load'
-c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
-```
-
-In this example, `a site` will open by default the first time JupyterLab is opened.
-
-### Open local html file in iframe
-
-```python3
-c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
-```
-
-Any files specified by 'local_files' will be served up as local links. By default any file on the filesystem is allowed, to disable this and only allow the list specifically designated here, set `c.JupyterLabIFrame.allow_any_local = False`. If you allow all, in the open dialog start the file path with `local://`.
+Any files specified as local will be served up as local links. By default any file on the filesystem is allowed, to disable this and only allow the items designated in the list above, set `c.JupyterLabIFrame.allow_any_local = False`.
 
 ## Caveats
-
-### Update for version v0.0.12 - Most of these are covered by #31
-
-~~This package uses iframes, so is subject to a few restrictions:~~
-~~- If Jlab is served over SSL, so must the sites (http/https must match)~~
-~~- If the underlying site enforces same-origin, then we cannot navigate to them (e.g. google)~~
-
+- If running behind SSL, non-SSL sites will be proxied via the `jupyterlab_iframe` server extension, and vice-versa if running without SSL for SSL sites.
+- If a site enforces `same-origin`, it will be proxied.
+- If there are any other issues loading a site directly, it will attempt to proxy via the backend. Sites that specify absolute-path resources (e.g. serving images from a separate site CDN) may not load completely or correctly
 
 ## Similar Packages
 
@@ -72,7 +55,7 @@ To configure binder to serve a landing page, simply add the following configurat
 
 To requirements.txt:
 
-`jupyterlab_iframe>=0.2`
+`jupyterlab_iframe>=0.3`
 
 To postBuild:
 
@@ -80,7 +63,7 @@ To postBuild:
 jupyter labextension install jupyterlab_iframe@^0.2
 jupyter serverextension enable --py jupyterlab_iframe
 
-config="c.JupyterLabIFrame.welcome = 'local://binder/landing.html'"
+config="c.JupyterLabIFrame.sites = {'path': 'local://binder/landing.html', 'openOnLoad': True}"
 mkdir -p ~/.jupyter
 echo -e $config > ~/.jupyter/jupyter_notebook_config.py
 ```

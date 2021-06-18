@@ -1,10 +1,10 @@
 #!/bin/bash
-jupyter labextension install jupyterlab_iframe@^0.2 --no-build
+jupyter labextension install jupyterlab_iframe@^0.3 --no-build
 jupyter lab build --dev-build=False --minimize=False
 jupyter serverextension enable --py jupyterlab_iframe
 
 
-config="c.JupyterLabIFrame.welcome = 'local://binder/landing.html'"
+config="c.JupyterLabIFrame.sites = {'path': 'local://binder/landing.html', 'openOnLoad': True}"
 
 mkdir -p ~/.jupyter
 echo -e $config > ~/.jupyter/jupyter_notebook_config.py
