@@ -4,6 +4,7 @@
   "description": "IFrame widgets for JupyterLab",
   "author": "Tim Paine",
   "main": "lib/index.js",
+  "license": "Apache-2.0",
   "keywords": [
     "jupyter",
     "jupyterlab",
