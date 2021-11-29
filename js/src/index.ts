@@ -32,23 +32,31 @@ const extension: JupyterFrontEndPlugin<void> = {
 
 class IFrameWidget extends Widget {
   private local_file: boolean;
+  private path: string;
 
   public constructor(path: string) {
     super();
     this.id = `${path}-${unique}`;
+    this.path = path;
+    this.local_file = false;
+
+    void this.init();
+  }
+
+  public async init() {
     const iconClass = `favicon-${unique}`;
     this.title.iconClass = iconClass;
-    this.title.label = path;
+    this.title.label = this.path;
     this.title.closable = true;
 
-    this.local_file = path.startsWith("local://");
+    this.local_file = this.path.startsWith("local://");
 
     unique += 1;
 
 
-    if (!this.local_file && !path.startsWith("http")) {
+    if (!this.local_file && !this.path.startsWith("http")) {
       // use https, its 2020
-      path = "https://" + path;
+      this.path = "https://" + this.path;
     }
 
     const div = document.createElement("div");
@@ -59,63 +67,60 @@ class IFrameWidget extends Widget {
       // External website
 
       // First try to get directly
-      request("get", path).then((res: IRequestResult) => {
-        if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
-          // Site does not disable iframe
+      const res: IRequestResult = await request("get", this.path);
+      if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
+        // Site does not disable iframe
 
-          // eslint-disable-next-line no-console
-          console.log("site accessible: proceeding");
+        // eslint-disable-next-line no-console
+        console.log("site accessible: proceeding");
 
-          iframe.src = path;
+        iframe.src = this.path;
 
-          const favicon_url = new URL("/favicon.ico", path).href;
+        const favicon_url = new URL("/favicon.ico", this.path).href;
 
-          request("get", favicon_url).then((res2: IRequestResult) => {
-            if (res2.ok) {
-              const style = document.createElement("style");
-              style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
-              document.head.appendChild(style);
-            }
-          });
+        const res2: IRequestResult = await request("get", favicon_url);
+        if (res2.ok) {
+          const style = document.createElement("style");
+          style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+          document.head.appendChild(style);
+        }
 
+      } else {
+        // Site is blocked for some reason, so attempt to proxy through python.
+        // Reasons include: disallowing iframes, http/https mismatch, etc
+
+        // eslint-disable-next-line no-console
+        console.log("site failed with code " + res.status.toString());
+
+        // eslint-disable-next-line no-empty
+        if (res.status === 404) {
+        // nothing we can do
+        // eslint-disable-next-line no-empty
+        } else if (res.status === 401) {
+        // nothing we can do
         } else {
-          // Site is blocked for some reason, so attempt to proxy through python.
-          // Reasons include: disallowing iframes, http/https mismatch, etc
+          // otherwise try to proxy
+          const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", this.path).href}`;
 
+          this.path = `iframes/proxy?path=${encodeURI(this.path)}`;
+          iframe.src = PageConfig.getBaseUrl() + this.path;
           // eslint-disable-next-line no-console
-          console.log("site failed with code " + res.status.toString());
+          console.log(`setting proxy for ${this.path}`);
 
-          // eslint-disable-next-line no-empty
-          if (res.status === 404) {
-          // nothing we can do
-          // eslint-disable-next-line no-empty
-          } else if (res.status === 401) {
-          // nothing we can do
-          } else {
-            // otherwise try to proxy
-            const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", path).href}`;
-
-            path = `iframes/proxy?path=${encodeURI(path)}`;
-            iframe.src = PageConfig.getBaseUrl() + path;
-            // eslint-disable-next-line no-console
-            console.log(`setting proxy for ${path}`);
-
-            request("get", favicon_url).then((res2: IRequestResult) => {
-              if (res2.ok) {
-                const style = document.createElement("style");
-                style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
-                document.head.appendChild(style);
-              }
-            });
+          const res2: IRequestResult = await request("get", favicon_url);
+          if (res2.ok) {
+            const style = document.createElement("style");
+            style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
+            document.head.appendChild(style);
           }
         }
-      });
+      }
     } else {
       // Local file, replace url and query for local
       // eslint-disable-next-line no-console
-      console.log("fetching local file " + path);
-      path = `iframes/local?path=${encodeURI(path.replace("local://", ""))}`;
-      iframe.src = PageConfig.getBaseUrl() + path;
+      console.log("fetching local file " + this.path);
+      this.path = `iframes/local?path=${encodeURI(this.path.replace("local://", ""))}`;
+      iframe.src = PageConfig.getBaseUrl() + this.path;
 
     }
 
@@ -140,13 +145,12 @@ class OpenIFrameWidget extends Widget {
 
     super({ node: body });
   }
+  public get inputNode(): HTMLInputElement {
+    return this.node.getElementsByTagName("input")[0];
+  }
 
   public getValue(): string {
     return this.inputNode.value;
-  }
-
-  public get inputNode(): HTMLInputElement {
-    return this.node.getElementsByTagName("input")[0];
   }
 }
 
@@ -165,7 +169,7 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
   palette.addItem({command, category: "Sites"});
 }
 
-function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
+async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
 
   // Declare a widget variable
   let widget: IFrameWidget;
@@ -174,28 +178,27 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
   const open_command = "iframe:open";
 
   app.commands.addCommand(open_command, {
-    execute: (args) => {
+    execute: async (args) => {
       let path = typeof args.path === "undefined" ? "" : (args.path as string);
 
       if (path === "") {
-        showDialog({
+        const result = await showDialog({
           body: new OpenIFrameWidget(),
           buttons: [Dialog.cancelButton(), Dialog.okButton({ label: "GO" })],
           focusNodeSelector: "input",
           title: "Open site",
-        }).then((result) => {
-          if (result.button.label === "Cancel") {
-            return;
-          }
-
-          if (!result.value) {
-            return null;
-          }
-          path =  result.value;
-          widget = new IFrameWidget(path);
-          app.shell.add(widget);
-          app.shell.activateById(widget.id);
         });
+        if (result.button.label === "Cancel") {
+          return;
+        }
+
+        if (!result.value) {
+          return null;
+        }
+        path =  result.value;
+        widget = new IFrameWidget(path);
+        app.shell.add(widget);
+        app.shell.activateById(widget.id);
       } else {
         widget = new IFrameWidget(path);
         app.shell.add(widget);
@@ -210,59 +213,58 @@ function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
   palette.addItem({command: open_command, category: "Sites"});
 
   // grab sites from serverextension
-  request("get", PageConfig.getBaseUrl() + "iframes/").then((res: IRequestResult) => {
-    if (res.ok) {
-      const jsn: any = res.json();
-      const welcome = jsn.welcome;
-      const local_files = jsn.local_files;
+  const res: IRequestResult = await request("get", PageConfig.getBaseUrl() + "iframes/");
+  if (res.ok) {
+    const jsn: {[key: string]: string} = res.json();
+    const welcome = jsn.welcome;
+    const local_files = jsn.local_files;
 
-      let welcome_included = false;
+    let welcome_included = false;
 
-      const sites = jsn.sites;
+    const sites = jsn.sites;
 
-      for (const site of sites) {
-        // eslint-disable-next-line no-console
-        console.log("adding quicklink for " + site);
+    for (const site of sites) {
+      // eslint-disable-next-line no-console
+      console.log("adding quicklink for " + site);
 
-        if (site === welcome) {
-          welcome_included = true;
-        }
-        if (site) {
-          registerSite(app, palette, site);
-        }
+      if (site === welcome) {
+        welcome_included = true;
       }
-
-      for (const site of local_files) {
-        const actual_site = `local://${site}`;
-
-        // eslint-disable-next-line no-console
-        console.log("adding quicklink for " + actual_site);
-
-        if (actual_site === welcome) {
-          welcome_included = true;
-        }
-        if (actual_site) {
-          registerSite(app, palette, actual_site);
-        }
-      }
-
-
-      if (!welcome_included) {
-        if (welcome !== "") {
-          registerSite(app, palette, welcome);
-        }
-      }
-
-      if (welcome) {
-        app.restored.then(() => {
-          if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
-            localStorage.setItem("jupyterlab_iframe_welcome", "false");
-            app.commands.execute("iframe:open-" + welcome);
-          }
-        });
+      if (site) {
+        registerSite(app, palette, site);
       }
     }
-  });
+
+    for (const site of local_files) {
+      const actual_site = `local://${site}`;
+
+      // eslint-disable-next-line no-console
+      console.log("adding quicklink for " + actual_site);
+
+      if (actual_site === welcome) {
+        welcome_included = true;
+      }
+      if (actual_site) {
+        registerSite(app, palette, actual_site);
+      }
+    }
+
+
+    if (!welcome_included) {
+      if (welcome !== "") {
+        registerSite(app, palette, welcome);
+      }
+    }
+
+    if (welcome) {
+      await app.restored;
+      if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
+        localStorage.setItem("jupyterlab_iframe_welcome", "false");
+        await app.commands.execute("iframe:open-" + welcome);
+      }
+    }
+  }
+
   // eslint-disable-next-line no-console
   console.log("JupyterLab extension jupyterlab_iframe is activated!");
 }
