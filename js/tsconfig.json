@@ -13,12 +13,12 @@
     "noUnusedLocals": true,
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
-    "outDir": "lib",
+    "outDir": "./lib",
     "rootDir": "src",
     "strict": true,
     "strictNullChecks": true,
     "target": "es2017",
-    "types": []
+    "types": ["jest"],
   },
-  "include": ["src/*"]
+  "include": ["src/*"],
 }

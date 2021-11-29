@@ -39,15 +39,15 @@
     }
   },
   "dependencies": {
-    "@jupyterlab/application": "^3.2.4",
-    "@jupyterlab/apputils": "^3.2.4",
-    "@jupyterlab/coreutils": "^5.2.4",
-    "@lumino/disposable": "^1.10.1",
+    "@jupyterlab/application": "^3.2.0",
+    "@jupyterlab/apputils": "^3.2.0",
+    "@jupyterlab/coreutils": "^5.2.0",
+    "@lumino/widgets": "^1.19.0",
     "requests-helper": "^0.1.5"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
-    "@jupyterlab/builder": "^3.2.4",
+    "@jupyterlab/builder": "^3.2.0",
     "@types/jest": "^27.0.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/eslint-plugin-tslint": "^5.4.0",
@@ -60,6 +60,7 @@
     "eslint-plugin-unicorn": "^39.0.0",
     "isomorphic-fetch": "^3.0.0",
     "jest": "^27.4.0",
+    "jest-raw-loader": "^1.0.1",
     "jest-transform-css": "^3.0.0",
     "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2",
