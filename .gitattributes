@@ -1,0 +1,3 @@
+jupyterlab_commands/nbconvert_functions/hideinput/templates/*  linguist-vendored
+docs/* linguist-documentation
+* text=auto eol=lf
