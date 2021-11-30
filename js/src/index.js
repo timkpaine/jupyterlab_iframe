@@ -1,49 +1,29 @@
 /* eslint-disable max-classes-per-file */
-import {
-  JupyterFrontEnd, JupyterFrontEndPlugin,
-} from "@jupyterlab/application";
+import {JupyterFrontEnd, JupyterFrontEndPlugin} from "@jupyterlab/application";
 
-import {
-  Dialog, ICommandPalette, showDialog,
-} from "@jupyterlab/apputils";
+import {Dialog, ICommandPalette, showDialog} from "@jupyterlab/apputils";
 
-import {
-  PageConfig,
-} from "@jupyterlab/coreutils";
+import {PageConfig} from "@jupyterlab/coreutils";
 
-import {
-  Widget,
-} from "@lumino/widgets";
+import {Widget} from "@lumino/widgets";
 
-import {
-  IRequestResult, request,
-} from "requests-helper";
+import {IRequestResult, request} from "requests-helper";
 
 import "../style/index.css";
 
 let unique = 0;
 
-const extension: JupyterFrontEndPlugin<void> = {
-  activate,
-  autoStart: true,
-  id: "jupyterlab_iframe",
-  requires: [ICommandPalette],
-};
-
 class IFrameWidget extends Widget {
-  private local_file: boolean;
-  private path: string;
-
-  public constructor(path: string) {
+  constructor(path) {
     super();
     this.id = `${path}-${unique}`;
     this.path = path;
     this.local_file = false;
 
-    void this.init();
+    this.init();
   }
 
-  public async init() {
+  async init() {
     const iconClass = `favicon-${unique}`;
     this.title.iconClass = iconClass;
     this.title.label = this.path;
@@ -53,21 +33,20 @@ class IFrameWidget extends Widget {
 
     unique += 1;
 
-
     if (!this.local_file && !this.path.startsWith("http")) {
       // use https, its 2020
-      this.path = "https://" + this.path;
+      this.path = `https://${this.path}`;
     }
 
     const div = document.createElement("div");
     div.classList.add("iframe-widget");
     const iframe = document.createElement("iframe");
 
-    if (!this.local_file){
+    if (!this.local_file) {
       // External website
 
       // First try to get directly
-      const res: IRequestResult = await request("get", this.path);
+      const res = await request("get", this.path);
       if (res.ok && !res.headers.includes("Access-Control-Allow-Origin")) {
         // Site does not disable iframe
 
@@ -78,26 +57,25 @@ class IFrameWidget extends Widget {
 
         const favicon_url = new URL("/favicon.ico", this.path).href;
 
-        const res2: IRequestResult = await request("get", favicon_url);
+        const res2 = await request("get", favicon_url);
         if (res2.ok) {
           const style = document.createElement("style");
           style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
           document.head.appendChild(style);
         }
-
       } else {
         // Site is blocked for some reason, so attempt to proxy through python.
         // Reasons include: disallowing iframes, http/https mismatch, etc
 
         // eslint-disable-next-line no-console
-        console.log("site failed with code " + res.status.toString());
+        console.log(`site failed with code ${res.status.toString()}`);
 
         // eslint-disable-next-line no-empty
         if (res.status === 404) {
-        // nothing we can do
-        // eslint-disable-next-line no-empty
+          // nothing we can do
+          // eslint-disable-next-line no-empty
         } else if (res.status === 401) {
-        // nothing we can do
+          // nothing we can do
         } else {
           // otherwise try to proxy
           const favicon_url = `${PageConfig.getBaseUrl()}iframes/proxy?path=${new URL("/favicon.ico", this.path).href}`;
@@ -107,7 +85,7 @@ class IFrameWidget extends Widget {
           // eslint-disable-next-line no-console
           console.log(`setting proxy for ${this.path}`);
 
-          const res2: IRequestResult = await request("get", favicon_url);
+          const res2 = await request("get", favicon_url);
           if (res2.ok) {
             const style = document.createElement("style");
             style.innerHTML = `div.${iconClass} { background: url("${favicon_url}"); }`;
@@ -118,20 +96,18 @@ class IFrameWidget extends Widget {
     } else {
       // Local file, replace url and query for local
       // eslint-disable-next-line no-console
-      console.log("fetching local file " + this.path);
+      console.log(`fetching local file ${this.path}`);
       this.path = `iframes/local?path=${encodeURI(this.path.replace("local://", ""))}`;
       iframe.src = PageConfig.getBaseUrl() + this.path;
-
     }
 
     div.appendChild(iframe);
     this.node.appendChild(div);
   }
-
 }
 
 class OpenIFrameWidget extends Widget {
-  public constructor() {
+  constructor() {
     const body = document.createElement("div");
     const existingLabel = document.createElement("label");
     existingLabel.textContent = "Site:";
@@ -143,19 +119,20 @@ class OpenIFrameWidget extends Widget {
     body.appendChild(existingLabel);
     body.appendChild(input);
 
-    super({ node: body });
+    super({node: body});
   }
-  public get inputNode(): HTMLInputElement {
+
+  get inputNode() {
     return this.node.getElementsByTagName("input")[0];
   }
 
-  public getValue(): string {
+  getValue() {
     return this.inputNode.value;
   }
 }
 
-function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: string) {
-  const command = "iframe:open-" + site;
+function registerSite(app, palette, site) {
+  const command = `iframe:open-${site}`;
 
   app.commands.addCommand(command, {
     execute: () => {
@@ -164,27 +141,26 @@ function registerSite(app: JupyterFrontEnd, palette: ICommandPalette, site: stri
       app.shell.activateById(widget.id);
     },
     isEnabled: () => true,
-    label: "Open " + site,
+    label: `Open ${site}`,
   });
   palette.addItem({command, category: "Sites"});
 }
 
-async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
-
+async function activate(app, palette) {
   // Declare a widget variable
-  let widget: IFrameWidget;
+  let widget;
 
   // Add an application command
   const open_command = "iframe:open";
 
   app.commands.addCommand(open_command, {
     execute: async (args) => {
-      let path = typeof args.path === "undefined" ? "" : (args.path as string);
+      let path = typeof args.path === "undefined" ? "" : args.path;
 
       if (path === "") {
         const result = await showDialog({
           body: new OpenIFrameWidget(),
-          buttons: [Dialog.cancelButton(), Dialog.okButton({ label: "GO" })],
+          buttons: [Dialog.cancelButton(), Dialog.okButton({label: "GO"})],
           focusNodeSelector: "input",
           title: "Open site",
         });
@@ -193,9 +169,9 @@ async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
         }
 
         if (!result.value) {
-          return null;
+          return;
         }
-        path =  result.value;
+        path = result.value;
         widget = new IFrameWidget(path);
         app.shell.add(widget);
         app.shell.activateById(widget.id);
@@ -213,19 +189,19 @@ async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
   palette.addItem({command: open_command, category: "Sites"});
 
   // grab sites from serverextension
-  const res: IRequestResult = await request("get", PageConfig.getBaseUrl() + "iframes/");
+  const res = await request("get", `${PageConfig.getBaseUrl()}iframes/`);
   if (res.ok) {
-    const jsn: {[key: string]: string} = res.json();
-    const welcome = jsn.welcome;
-    const local_files = jsn.local_files;
+    const jsn = res.json();
+    const {welcome} = jsn;
+    const {local_files} = jsn;
 
     let welcome_included = false;
 
-    const sites = jsn.sites;
+    const {sites} = jsn;
 
-    for (const site of sites) {
+    sites.forEach((site) => {
       // eslint-disable-next-line no-console
-      console.log("adding quicklink for " + site);
+      console.log(`adding quicklink for ${site}`);
 
       if (site === welcome) {
         welcome_included = true;
@@ -233,13 +209,13 @@ async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
       if (site) {
         registerSite(app, palette, site);
       }
-    }
+    });
 
-    for (const site of local_files) {
+    local_files.forEach((site) => {
       const actual_site = `local://${site}`;
 
       // eslint-disable-next-line no-console
-      console.log("adding quicklink for " + actual_site);
+      console.log(`adding quicklink for ${actual_site}`);
 
       if (actual_site === welcome) {
         welcome_included = true;
@@ -247,8 +223,7 @@ async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
       if (actual_site) {
         registerSite(app, palette, actual_site);
       }
-    }
-
+    });
 
     if (!welcome_included) {
       if (welcome !== "") {
@@ -260,7 +235,7 @@ async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
       await app.restored;
       if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
         localStorage.setItem("jupyterlab_iframe_welcome", "false");
-        await app.commands.execute("iframe:open-" + welcome);
+        await app.commands.execute(`iframe:open-${welcome}`);
       }
     }
   }
@@ -268,6 +243,13 @@ async function activate(app: JupyterFrontEnd, palette: ICommandPalette) {
   // eslint-disable-next-line no-console
   console.log("JupyterLab extension jupyterlab_iframe is activated!");
 }
+
+const extension = {
+  activate,
+  autoStart: true,
+  id: "jupyterlab_iframe",
+  requires: [ICommandPalette],
+};
 
 export default extension;
 export {activate as _activate};
