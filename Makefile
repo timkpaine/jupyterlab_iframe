@@ -38,7 +38,7 @@ serverextension: install ## enable serverextension
 
 js:  ## build javascript
 	cd js; ${YARN}
-	cd js; ${YARN} build
+	cd js; ${YARN} build:all
 
 labextension: js ## enable labextension
 	cd js; ${PYTHON} -m jupyter labextension install .
@@ -60,4 +60,4 @@ help:
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: clean install serverextension labextension test tests help docs dist
+.PHONY: clean install serverextension labextension test tests help docs dist js
