@@ -1,13 +1,11 @@
 /* eslint-disable max-classes-per-file */
-import {JupyterFrontEnd, JupyterFrontEndPlugin} from "@jupyterlab/application";
-
 import {Dialog, ICommandPalette, showDialog} from "@jupyterlab/apputils";
 
 import {PageConfig} from "@jupyterlab/coreutils";
 
 import {Widget} from "@lumino/widgets";
 
-import {IRequestResult, request} from "requests-helper";
+import {request} from "requests-helper";
 
 import "../style/index.css";
 
