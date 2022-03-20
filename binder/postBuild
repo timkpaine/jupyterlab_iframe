@@ -1,7 +1,7 @@
 #!/bin/bash
-jupyter labextension install jupyterlab_iframe@^0.2 --no-build
-jupyter lab build --dev-build=False --minimize=False
-jupyter serverextension enable --py jupyterlab_iframe
+# jupyter labextension install jupyterlab_iframe@^0.2 --no-build
+# jupyter lab build --dev-build=False --minimize=False
+# jupyter serverextension enable --py jupyterlab_iframe
 
 
 config="c.JupyterLabIFrame.welcome = 'local://binder/landing.html'"

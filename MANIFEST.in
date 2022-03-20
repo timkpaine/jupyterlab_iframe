@@ -20,6 +20,9 @@ prune js/yarn.lock
 # Get rid of docs
 prune docs
 
+# get rid of binder
+prune binder
+
 # Patterns to exclude from any directory
 global-exclude *~
 global-exclude *.pyc
