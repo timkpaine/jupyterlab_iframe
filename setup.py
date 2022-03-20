@@ -64,7 +64,7 @@ builder = npm_builder(build_cmd="build:all", path=jshere)
 
 setup(
     name=name,
-    version="0.4.1",
+    version="0.4.2",
     description="IFrame widgets for JupyterLab",
     long_description=long_description,
     long_description_content_type="text/markdown",
