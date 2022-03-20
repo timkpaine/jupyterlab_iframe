@@ -230,7 +230,7 @@ async function activate(app, palette) {
     }
 
     if (welcome) {
-      app.restored.then(async ()=> {
+      app.restored.then(async () => {
         if (!localStorage.getItem("jupyterlab_iframe_welcome")) {
           localStorage.setItem("jupyterlab_iframe_welcome", "false");
           await app.commands.execute(`iframe:open-${welcome}`);
