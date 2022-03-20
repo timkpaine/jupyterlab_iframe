@@ -1,5 +1,5 @@
 # for Coverage
-from mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 from jupyterlab_iframe.extension import (
     load_jupyter_server_extension,
     IFrameHandler,

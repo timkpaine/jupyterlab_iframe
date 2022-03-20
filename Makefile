@@ -1,56 +1,67 @@
-PYTHON := python
-YARN := yarn
+testpy: ## Clean and Make unit tests
+	python -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe --junitxml=python_junit.xml --cov-report=xml --cov-branch
 
 testjs: ## Clean and Make js tests
-	cd js; ${YARN} test
+	cd js; yarn test
 
-testpy: ## Clean and Make unit tests
-	${PYTHON} -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe
+test: tests
+tests: testpy testjs ## run the tests
 
-tests: lint ## run the tests
-	${PYTHON} -m pytest -v jupyterlab_iframe/tests --cov=jupyterlab_iframe --junitxml=python_junit.xml --cov-report=xml --cov-branch
-	cd js; ${YARN} test
+lintpy:  ## Black/flake8 python
+	python -m black --check jupyterlab_iframe setup.py
+	python -m flake8 jupyterlab_iframe setup.py
 
-lint: ## run linter
-	${PYTHON} -m flake8 jupyterlab_iframe setup.py
-	cd js; ${YARN} lint
+lintjs:  ## ESlint javascript
+	cd js; yarn lint
 
-fix:  ## run autopep8/tslint fix
-	${PYTHON} -m black jupyterlab_iframe/ setup.py
-	cd js; ${YARN} fix
+lint: lintpy lintjs  ## run linter
 
-clean: ## clean the repository
-	find . -name "__pycache__" | xargs  rm -rf
-	find . -name "*.pyc" | xargs rm -rf
-	find . -name ".ipynb_checkpoints" | xargs  rm -rf
-	rm -rf .coverage coverage cover htmlcov logs build dist *.egg-info lib node_modules
-	# make -C ./docs clean
+fixpy:  ## Black python
+	python -m black jupyterlab_iframe/ setup.py
+
+fixjs:  ## ESlint Autofix JS
+	cd js; yarn fix
+
+fix: fixpy fixjs  ## run black/tslint fix
+
+check: checks
+checks:  ## run lint and other checks
+	check-manifest
+
+build:  ## build python/javascript
+	python -m build .
+
+develop:  ## install to site-packages in editable mode
+	python -m pip install --upgrade build pip setuptools twine wheel
+	cd js; yarn
+	python -m pip install -e .[develop]
+
+install:  ## install to site-packages
+	python -m pip install .
+
+dist: clean build  ## create dists
+	python -m twine check dist/*
+
+publishpy:  ## dist to pypi
+	python -m twine upload dist/* --skip-existing
+
+publishjs:  ## dist to npm
+	cd js; npm publish || echo "can't publish - might already exist"
+
+publish: dist publishpy publishjs  ## dist to pypi and npm
 
 docs:  ## make documentation
 	make -C ./docs html
 	open ./docs/_build/html/index.html
 
-install:  ## install to site-packages
-	${PYTHON} -m pip install .
-
-serverextension: install ## enable serverextension
-	${PYTHON} -m jupyter serverextension enable --py jupyterlab_iframe
-
-js:  ## build javascript
-	cd js; ${YARN}
-	cd js; ${YARN} build:all
-
-labextension: js ## enable labextension
-	cd js; ${PYTHON} -m jupyter labextension install .
-
-dist: js  ## create dists
-	rm -rf dist build
-	${PYTHON} setup.py sdist bdist_wheel
-	${PYTHON} -m twine check dist/*
-
-publish: dist  ## dist to pypi and npm
-	${PYTHON} -m twine upload dist/* --skip-existing
-	cd js; npm publish || echo "can't publish - might already exist"
+clean: ## clean the repository
+	find . -name "__pycache__" | xargs  rm -rf
+	find . -name "*.pyc" | xargs rm -rf
+	find . -name ".ipynb_checkpoints" | xargs  rm -rf
+	rm -rf .coverage coverage *.xml build dist *.egg-info lib node_modules .pytest_cache *.egg-info
+	rm -rf jupyterlab_iframe/labextension
+	# make -C ./docs clean
+	git clean -fd
 
 # Thanks to Francoise at marmelab.com for this
 .DEFAULT_GOAL := help
@@ -60,4 +71,4 @@ help:
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: clean install serverextension labextension test tests help docs dist js
+.PHONY: testjs testpy tests test lintpy lintjs lint fixpy fixjs fix checks check build develop install labextension dist publishpy publishjs publish docs clean

@@ -1,21 +1,13 @@
 from codecs import open
 from os import path
 
-from jupyter_packaging import (
-    combine_commands,
-    create_cmdclass,
-    ensure_targets,
-    get_version,
-    install_npm,
-)
+from jupyter_packaging import wrap_installers, npm_builder, get_data_files
 from setuptools import find_packages, setup
 
 pjoin = path.join
-
 name = "jupyterlab_iframe"
 here = path.abspath(path.dirname(__file__))
-jshere = path.join(here, "js")
-version = get_version(pjoin(here, name, "_version.py"))
+jshere = path.abspath(pjoin(path.dirname(__file__), "js"))
 
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read().replace("\r\n", "\n")
@@ -27,47 +19,52 @@ requires = [
     "tornado-proxy-handlers>=0.0.4",
 ]
 
-requires_dev = requires + [
-    "black>=20.",
-    "bump2version>=1.0.0",
-    "flake8>=3.7.8",
-    "flake8-black>=0.2.1",
-    "jupyter_packaging",
-    "mock",
+requires_test = [
     "pytest>=4.3.0",
     "pytest-cov>=2.6.1",
-    "Sphinx>=1.8.4",
-    "sphinx-markdown-builder>=0.5.2",
+]
+
+requires_dev = (
+    requires
+    + requires_test
+    + [
+        "black>=20.8b1",
+        "bump2version>=1.0.0",
+        "check-manifest",
+        "flake8>=3.7.8",
+        "flake8-black>=0.2.1",
+        "jupyter_packaging",
+        "Sphinx>=1.8.4",
+        "sphinx-markdown-builder>=0.5.2",
+    ]
+)
+
+ext_path = pjoin(here, name, "extension")
+lab_path = pjoin(here, name, "labextension")
+
+# Representative files that should exist after a successful build
+jstargets = [
+    pjoin(jshere, "lib", "index.js"),
 ]
 
 data_spec = [
-    # Lab extension installed by default:
     (
         "share/jupyter/labextensions/jupyterlab_iframe",
         "jupyterlab_iframe/labextension",
         "**",
     ),
-    # Config to enable server extension by default:
-    ("etc/jupyter/jupyter_server_config.d", "jupyter-config", "*.json"),
+    ("etc/jupyter/jupyter_server_config.d", ext_path, "*.json"),
 ]
 
+ensured_targets = [
+    pjoin(here, "jupyterlab_iframe", "labextension", "package.json"),
+]
 
-cmdclass = create_cmdclass("js", data_files_spec=data_spec)
-cmdclass["js"] = combine_commands(
-    install_npm(jshere, build_cmd="build:all"),
-    ensure_targets(
-        [
-            pjoin(jshere, "lib", "index.js"),
-            pjoin(jshere, "style", "index.css"),
-            pjoin(here, "jupyterlab_iframe", "labextension", "package.json"),
-        ]
-    ),
-)
-
+builder = npm_builder(build_cmd="build:all", path=jshere)
 
 setup(
     name=name,
-    version=version,
+    version="0.4.1",
     description="IFrame widgets for JupyterLab",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -85,11 +82,24 @@ setup(
         "Framework :: Jupyter",
         "Framework :: Jupyter :: JupyterLab",
     ],
-    cmdclass=cmdclass,
-    keywords="jupyter jupyterlab",
-    packages=find_packages(),
+    platforms="Linux, Mac OS X, Windows",
+    keywords=["Jupyter", "Jupyterlab", "Widgets", "IPython", "Graph", "Data", "DAG"],
+    cmdclass=wrap_installers(
+        post_develop=builder, pre_dist=builder, ensured_targets=ensured_targets
+    ),
+    data_files=get_data_files(data_spec),
+    packages=find_packages(
+        exclude=[
+            "tests",
+        ]
+    ),
     install_requires=requires,
-    extras_require={"dev": requires_dev},
+    test_suite="jupyterlab_iframe.tests",
+    tests_require=requires_test,
+    extras_require={
+        "dev": requires_dev,
+        "develop": requires_dev,
+    },
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.7",
