@@ -51,6 +51,7 @@ jobs:
     - name: Checks
       run: |
         make checks
+      if: ${{ github.event_name == matrix.event-name || matrix.os == 'ubuntu-latest' }}
 
     - name: Test
       run: |
