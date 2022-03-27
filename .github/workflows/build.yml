@@ -41,6 +41,10 @@ jobs:
       run: |
         make develop
 
+    - name: Build 
+      run: |
+        make build
+
     - name: Lint
       run: |
         make lint
@@ -48,6 +52,7 @@ jobs:
     - name: Checks
       run: |
         make checks
+      if: ${{ github.event_name == matrix.event-name || matrix.os == 'ubuntu-latest' }}
 
     - name: Test
       run: |
