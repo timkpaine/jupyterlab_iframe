@@ -1,7 +1,7 @@
 from codecs import open
 from os import path
 
-from jupyter_packaging import wrap_installers, npm_builder, get_data_files
+from jupyter_packaging import get_data_files, npm_builder, wrap_installers
 from setuptools import find_packages, setup
 
 pjoin = path.join
@@ -39,8 +39,8 @@ requires_dev = (
     ]
 )
 
-ext_path = pjoin(here, name, "extension")
-lab_path = pjoin(here, name, "labextension")
+ext_path = pjoin(name, "extension")
+lab_path = pjoin(name, "labextension")
 
 # Representative files that should exist after a successful build
 jstargets = [
@@ -50,17 +50,17 @@ jstargets = [
 data_spec = [
     (
         "share/jupyter/labextensions/jupyterlab_iframe",
-        "jupyterlab_iframe/labextension",
+        lab_path,
         "**",
     ),
     ("etc/jupyter/jupyter_server_config.d", ext_path, "*.json"),
 ]
 
 ensured_targets = [
-    pjoin(here, "jupyterlab_iframe", "labextension", "package.json"),
+    pjoin("jupyterlab_iframe", "labextension", "package.json"),
 ]
 
-builder = npm_builder(build_cmd="build:all", path=jshere)
+builder = npm_builder(build_cmd="build", path=jshere)
 
 setup(
     name=name,
