@@ -59,10 +59,6 @@ jobs:
         make tests
       if: ${{ github.event_name == matrix.event-name || matrix.os == 'ubuntu-latest' }}
 
-    - name: Twine check
-      run: |
-        make dist
-
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
@@ -78,3 +74,8 @@ jobs:
 
     - name: Upload coverage
       uses: codecov/codecov-action@v1
+
+    - name: Twine check
+      run: |
+        make dist
+
