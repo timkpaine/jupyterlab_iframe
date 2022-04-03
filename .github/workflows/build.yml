@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.9]
-        node-version: [12.x]
+        node-version: [14.x]
         event-name: [push]
 
     steps:
@@ -59,10 +59,6 @@ jobs:
         make tests
       if: ${{ github.event_name == matrix.event-name || matrix.os == 'ubuntu-latest' }}
 
-    - name: Twine check
-      run: |
-        make dist
-
     - name: Upload test results
       uses: actions/upload-artifact@v2
       with:
@@ -70,5 +66,16 @@ jobs:
         path: python_junit.xml
       if: ${{ always() }}
 
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      with:
+        files: python_junit.xml
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+
     - name: Upload coverage
       uses: codecov/codecov-action@v1
+
+    - name: Twine check
+      run: |
+        make dist
+
