@@ -8,8 +8,8 @@ test: tests
 tests: testpy testjs ## run the tests
 
 lintpy:  ## Black/flake8 python
-	python -m black --check jupyterlab_iframe setup.py
-	python -m flake8 jupyterlab_iframe setup.py
+	python -m black --check jupyterlab_iframe setup.py docs/conf.py
+	python -m flake8 jupyterlab_iframe setup.py docs/conf.py
 
 lintjs:  ## ESlint javascript
 	cd js; yarn lint
@@ -17,7 +17,7 @@ lintjs:  ## ESlint javascript
 lint: lintpy lintjs  ## run linter
 
 fixpy:  ## Black python
-	python -m black jupyterlab_iframe/ setup.py
+	python -m black jupyterlab_iframe/ setup.py docs/conf.py
 
 fixjs:  ## ESlint Autofix JS
 	cd js; yarn fix
