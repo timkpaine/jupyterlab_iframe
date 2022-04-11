@@ -7,7 +7,9 @@ include setup.cfg
 include pyproject.toml
 include Makefile
 
-recursive-include jupyterlab_iframe/labextension *.*
+graft jupyterlab_iframe
+graft jupyterlab_iframe/extension
+graft jupyterlab_iframe/labextension
 
 # grab js
 graft js

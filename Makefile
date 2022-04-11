@@ -26,10 +26,10 @@ fix: fixpy fixjs  ## run black/tslint fix
 
 check: checks
 checks:  ## run lint and other checks
-	check-manifest
+	check-manifest -v
 
-build: clean  ## build python/javascript
-	python -m build . -n -w -s
+build:  ## build python/javascript
+	python -m build .
 
 develop:  ## install to site-packages in editable mode
 	python -m pip install --upgrade build pip setuptools twine wheel
