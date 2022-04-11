@@ -62,8 +62,8 @@ ensured_targets = [
 ]
 
 builder = npm_builder(
-     build_cmd="build", path=jshere, source_dir=pjoin(jshere, "src"), build_dir=lab_path
- )
+    build_cmd="build", path=jshere, source_dir=pjoin(jshere, "src"), build_dir=lab_path
+)
 
 setup(
     name=name,
