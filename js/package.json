@@ -13,7 +13,7 @@
   "scripts": {
     "build:babel": "babel src/ --source-maps --out-dir lib/",
     "build:lab": "jupyter labextension build .",
-    "build": "npm-run-all build:*",
+    "build": "npm-run-all clean build:*",
     "clean": "rimraf lib ../jupyterlab_autoversion/labextension",
     "fix": "yarn lint --fix",
     "lint": "eslint -c .eslintrc.js --ext .js src/ tests/",

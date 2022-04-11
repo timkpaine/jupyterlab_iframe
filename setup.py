@@ -58,9 +58,12 @@ data_spec = [
 
 ensured_targets = [
     pjoin("jupyterlab_iframe", "labextension", "package.json"),
+    pjoin("jupyterlab_iframe", "labextension", "static", "style.js"),
 ]
 
-builder = npm_builder(build_cmd="build", path=jshere)
+builder = npm_builder(
+     build_cmd="build", path=jshere, source_dir=pjoin(jshere, "src"), build_dir=lab_path
+ )
 
 setup(
     name=name,
@@ -88,11 +91,9 @@ setup(
         post_develop=builder, pre_dist=builder, ensured_targets=ensured_targets
     ),
     data_files=get_data_files(data_spec),
-    packages=find_packages(
-        exclude=[
-            "tests",
-        ]
-    ),
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
     install_requires=requires,
     test_suite="jupyterlab_iframe.tests",
     tests_require=requires_test,
@@ -100,7 +101,5 @@ setup(
         "dev": requires_dev,
         "develop": requires_dev,
     },
-    include_package_data=True,
-    zip_safe=False,
     python_requires=">=3.7",
 )
