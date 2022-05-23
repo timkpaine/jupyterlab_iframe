@@ -166,7 +166,6 @@ ENV/
 
 keys.sh
 .autoversion
-yarn.lock
 
 docs/api
 docs/index.md
@@ -176,4 +175,5 @@ jupyterlab_iframe/labextension
 Untitled.ipynb
 Untitled.html
 *.tsbuildinfo
+.vscode
 
