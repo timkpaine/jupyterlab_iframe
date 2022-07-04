@@ -2,14 +2,14 @@ import tornado.gen
 import tornado.web
 import tornado.websocket
 import tornado.httpclient
-from notebook.base.handlers import IPythonHandler
+from jupyter_server.base.handlers import JupyterHandler
 from tornado_proxy_handlers import (
     ProxyHandler as TProxyHandler,
     ProxyWSHandler as TProxyWSHandler,
 )
 
 
-class ProxyHandler(IPythonHandler, TProxyHandler):
+class ProxyHandler(JupyterHandler, TProxyHandler):
     def initialize(self, **kwargs):
         super(ProxyHandler, self).initialize(**kwargs)
 

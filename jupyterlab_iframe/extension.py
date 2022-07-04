@@ -1,12 +1,12 @@
 import json
 import os.path
 import tornado.web
-from notebook.base.handlers import IPythonHandler
-from notebook.utils import url_path_join
+from jupyter_server.base.handlers import JupyterHandler
+from jupyter_server.utils import url_path_join
 from .proxy import ProxyHandler, ProxyWSHandler
 
 
-class IFrameHandler(IPythonHandler):
+class IFrameHandler(JupyterHandler):
     def initialize(self, welcome=None, sites=None, local_files=None):
         self.sites = sites
         self.welcome = welcome
@@ -26,7 +26,7 @@ class IFrameHandler(IPythonHandler):
         )
 
 
-class IFrameLocalFileHandler(IPythonHandler):
+class IFrameLocalFileHandler(JupyterHandler):
     def initialize(self, local_files=None, allow_any=True):
         self.local_files = local_files
         self.allow_any = allow_any
