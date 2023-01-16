@@ -22,6 +22,7 @@ class TestExtension:
         m = MagicMock()
 
         h = IFrameHandler(app, m)
+        h.current_user = h._jupyter_current_user = "blerg"
         h._transforms = []
         h.get()
 
@@ -32,6 +33,7 @@ class TestExtension:
         m = MagicMock()
 
         h = ProxyHandler(app, m)
+        h.current_user = h._jupyter_current_user = "blerg"
         h._transforms = []
 
         with patch("requests.get") as m2:
