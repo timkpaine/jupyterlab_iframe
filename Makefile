@@ -23,6 +23,7 @@ fixjs:  ## ESlint Autofix JS
 	cd js; yarn fix
 
 fix: fixpy fixjs  ## run black/tslint fix
+format: fix
 
 check: checks
 checks:  ## run lint and other checks
@@ -71,4 +72,4 @@ help:
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: testjs testpy tests test lintpy lintjs lint fixpy fixjs fix checks check build develop install labextension dist publishpy publishjs publish docs clean
+.PHONY: testjs testpy tests test lintpy lintjs lint fixpy fixjs fix format checks check build develop install labextension dist publishpy publishjs publish docs clean
