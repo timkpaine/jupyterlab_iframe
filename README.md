@@ -51,7 +51,7 @@ Any files specified by 'local_files' will be served up as local links. By defaul
 
 ## Caveats
 
-### Update for version v0.0.12 - Most of these are covered by #31
+### Update for version v0.0.12 - Most of these are covered by [#31](https://github.com/timkpaine/jupyterlab_iframe/issues/31)
 
 ~~This package uses iframes, so is subject to a few restrictions:~~
 ~~- If Jlab is served over SSL, so must the sites (http/https must match)~~
