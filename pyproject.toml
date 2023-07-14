@@ -1,3 +1,100 @@
 [build-system]
-requires = ["setuptools", "wheel", "jupyter-packaging<2", "jupyterlab>=3"]
-build-backend = "jupyter_packaging.build_api"
+requires = [
+    "hatchling>=1.3.1",
+    "jupyterlab>=4,<5",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "jupyterlab_iframe"
+description = "IFrame widgets for JupyterLab"
+version = "0.4.4"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+authors = [
+    { name = "Tim Paine" },
+]
+keywords = [
+    "Jupyter",
+    "JupyterLab",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Jupyter",
+    "Framework :: Jupyter :: JupyterLab",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: Apache Software License",
+]
+dependencies = [
+    "jupyterlab>=4,<5",
+]
+
+[project.optional-dependencies]
+develop = [
+    "black>=23",
+    "check-manifest",
+    "ruff",
+    "pytest",
+    "pytest-cov",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+]
+
+[project.urls]
+Repository = "https://github.com/timkpaine/jupyterlab_iframe"
+Homepage = "https://github.com/timkpaine/jupyterlab_iframe"
+
+[tool.check-manifest]
+ignore = [
+	"jupyterlab_iframe/labextension/**",
+	"js/**"
+]
+
+[tool.hatch.build]
+artifacts = [
+    "jupyterlab_iframe/labextension"
+]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"jupyterlab_iframe/labextension" = "share/jupyter/labextensions/jupyterlab_iframe"
+"jupyterlab_iframe/extension/install.json" = "share/jupyter/labextensions/jupyterlab_iframe/install.json"
+"jupyterlab_iframe/extension/jupyterlab_iframe.json" = "etc/jupyter/jupyter_server_config.d/jupyterlab_iframe.json"
+"jupyterlab_iframe/extension/notebook_commands" = "share/jupyter/notebook"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".github",
+    "binder",
+    "docs",
+]
+
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "jupyterlab_iframe/labextension/package.json",
+]
+skip-if-exists = [
+    "jupyterlab_iframe/labextension/package.json",
+]
+dependencies = [
+    "hatch-jupyter-builder>=0.5.0",
+]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+path = "js"
+build_cmd = "build"
+
+[tool.ruff]
+line-length = 150
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
