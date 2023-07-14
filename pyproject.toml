@@ -34,6 +34,8 @@ classifiers = [
 ]
 dependencies = [
     "jupyterlab>=4,<5",
+    "requests>=2.22.0",
+    "tornado-proxy-handlers>=0.0.4",
 ]
 
 [project.optional-dependencies]
