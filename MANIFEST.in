@@ -1,9 +1,8 @@
 include LICENSE
 include README.md
-include CODE_OF_CONDUCT.md
 include CONTRIBUTING.md
 
-include setup.cfg
+include .bumpversion.cfg
 include pyproject.toml
 include Makefile
 
@@ -18,14 +17,18 @@ prune js/dist
 prune js/docs
 prune js/lib
 prune js/node_modules
-prune js/package-lock.json
 prune js/yarn.lock
-
-# Get rid of docs
-prune docs
 
 # get rid of binder
 prune binder
+
+# get rid of docs
+prune docs
+
+# get rid of test and lint artifacts
+prune .mypy_cache
+prune .pytest_cache
+prune .ruff_cache
 
 # Patterns to exclude from any directory
 global-exclude *~
