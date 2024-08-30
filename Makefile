@@ -27,18 +27,18 @@ tests: testpy testjs ## run the tests
 ###########
 # Linting #
 ###########
-lintpy:  ## Black/flake8 python
-	python -m ruff jupyterlab_iframe setup.py
-	python -m black --check jupyterlab_iframe setup.py
+lintpy:  ## Ruff python
+	python -m ruff check jupyterlab_iframe
+	python -m ruff format --check jupyterlab_iframe
 
 lintjs:  ## ESlint javascript
 	cd js; yarn lint
 
 lint: lintpy lintjs  ## run linter
 
-fixpy:  ## Black python
-	python -m ruff jupyterlab_iframe setup.py --fix
-	python -m black jupyterlab_iframe/ setup.py
+fixpy:  ## Ruff python
+	python -m ruff check --fix jupyterlab_iframe
+	python -m ruff format jupyterlab_iframe
 
 fixjs:  ## ESlint Autofix JS
 	cd js; yarn fix

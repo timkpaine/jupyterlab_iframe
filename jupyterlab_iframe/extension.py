@@ -56,21 +56,14 @@ def load_jupyter_server_extension(nb_server_app):
     web_app = nb_server_app.web_app
     sites = nb_server_app.config.get("JupyterLabIFrame", {}).get("iframes", [])
     welcome = nb_server_app.config.get("JupyterLabIFrame", {}).get("welcome", "")
-    local_files = nb_server_app.config.get("JupyterLabIFrame", {}).get(
-        "local_files", ""
-    )
-    allow_any = nb_server_app.config.get("JupyterLabIFrame", {}).get(
-        "allow_any_local", True
-    )
+    local_files = nb_server_app.config.get("JupyterLabIFrame", {}).get("local_files", "")
+    allow_any = nb_server_app.config.get("JupyterLabIFrame", {}).get("allow_any_local", True)
     local_files = [f for f in local_files if os.path.exists(f)]
 
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
 
-    nb_server_app.log.info(
-        "Installing jupyterlab_iframe handler on path %s"
-        % url_path_join(base_url, "iframes")
-    )
+    nb_server_app.log.info("Installing jupyterlab_iframe handler on path %s" % url_path_join(base_url, "iframes"))
     nb_server_app.log.info("Installing iframes: %s" % sites)
 
     if welcome:
