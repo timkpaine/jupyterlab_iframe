@@ -57,20 +57,13 @@ def load_jupyter_server_extension(nb_server_app):
 
     # remove local:// entries whose files don't exist on disk
     sites = [
-        s
-        for s in sites
-        if (
-            not s["path"].startswith("local://")
-            or os.path.exists(s["path"].replace("local://", ""))
-        )
+        s for s in sites if (not s["path"].startswith("local://") or os.path.exists(s["path"].replace("local://", "")))
     ]
 
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
 
-    nb_server_app.log.info(
-        "Installing jupyterlab_iframe handler on path %s" % url_path_join(base_url, "iframes")
-    )
+    nb_server_app.log.info("Installing jupyterlab_iframe handler on path %s" % url_path_join(base_url, "iframes"))
     nb_server_app.log.info("Installing sites: %s" % [s["path"] for s in sites])
 
     if allow_any:
