@@ -21,33 +21,40 @@ jupyter serverextension enable --py jupyterlab_iframe
 
 ## Options
 
-### External Sites
+Sites are configured as a list of objects. Each entry supports the following fields:
 
-install the server extension, and add the following to `jupyter_notebook_config.py`
+| Field        | Type    | Description                                                      |
+|--------------|---------|------------------------------------------------------------------|
+| `path`       | string  | URL (http/https) or `local://` path to an HTML file on the filesystem. |
+| `openOnLoad` | bool    | Open this site automatically the first time JupyterLab loads. Defaults to `False`. |
+| `launcher`   | bool    | Show a launcher tile for this site. Defaults to `False`. |
+| `customIcon` | string  | URL to a custom icon for the launcher tile (optional). If omitted, the site's favicon is used. |
 
-```python3
-c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
-```
-
-In this example, `list`, `of`, and `sites` will be available as links in the command palette.
-
-### Landing page on initial page load
-
-```python3
-c.JupyterLabIFrame.iframes = ['list', 'of', 'sites']
-c.JupyterLabIFrame.welcome = 'a site to show on initial load'
-c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
-```
-
-In this example, `a site` will open by default the first time JupyterLab is opened.
-
-### Open local html file in iframe
+Add the following to `jupyter_notebook_config.py`:
 
 ```python3
-c.JupyterLabIFrame.local_files = ['list', 'of', 'local', 'html', 'files']
+c.JupyterLabIFrame.sites = [
+    {
+        "path": "https://jupyter.org",
+        "openOnLoad": False,
+        "launcher": True,
+        "customIcon": "",   # leave blank to use the site's favicon
+    },
+    {
+        "path": "local://path/to/local/file.html",
+        "openOnLoad": True,
+        "launcher": False,
+        "customIcon": "",
+    },
+]
 ```
 
-Any files specified by 'local_files' will be served up as local links. By default any file on the filesystem is allowed, to disable this and only allow the list specifically designated here, set `c.JupyterLabIFrame.allow_any_local = False`. If you allow all, in the open dialog start the file path with `local://`.
+By default any local file on the filesystem can be opened via the `local://` scheme.
+To restrict access to only the explicitly listed sites, set:
+
+```python3
+c.JupyterLabIFrame.allow_any_local = False
+```
 
 ## Caveats
 
@@ -80,7 +87,7 @@ To postBuild:
 jupyter labextension install jupyterlab_iframe@^0.2
 jupyter serverextension enable --py jupyterlab_iframe
 
-config="c.JupyterLabIFrame.welcome = 'local://binder/landing.html'"
+config="c.JupyterLabIFrame.sites = [{'path': 'local://binder/landing.html', 'openOnLoad': True, 'launcher': False, 'customIcon': ''}]"
 mkdir -p ~/.jupyter
 echo -e $config > ~/.jupyter/jupyter_notebook_config.py
 ```
