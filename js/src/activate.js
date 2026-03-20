@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import {Dialog, showDialog} from "@jupyterlab/apputils";
+import {Dialog, MainAreaWidget, WidgetTracker, showDialog} from "@jupyterlab/apputils";
 
 import {PageConfig} from "@jupyterlab/coreutils";
 
@@ -9,12 +9,25 @@ import {OpenIFrameWidget} from "./dialog";
 import {IFrameWidget} from "./iframe";
 import {addCommandPaletteSite, addLauncherSite, addPageLoadSite} from "./commands";
 
-export async function activate(app, launcher, palette) {
-  // Declare a widget variable
-  let widget;
-
+export async function activate(app, launcher, palette, restorer) {
   // Add an application command
   const open_command = "iframe:open";
+
+  // Track open iframe widgets for session restore
+  const tracker = new WidgetTracker({namespace: "iframe"});
+
+  const handleWidget = (path) => {
+    const content = new IFrameWidget(path);
+    const widget = new MainAreaWidget({content});
+    if (!tracker.has(widget)) {
+      tracker.add(widget);
+    }
+    if (!widget.isAttached) {
+      app.shell.add(widget, "main");
+    }
+    widget.update();
+    app.shell.activateById(widget.id);
+  };
 
   app.commands.addCommand(open_command, {
     execute: async (args) => {
@@ -37,17 +50,20 @@ export async function activate(app, launcher, palette) {
         }
 
         path = result.value;
-        widget = new IFrameWidget(path);
-        app.shell.add(widget);
-        app.shell.activateById(widget.id);
+        handleWidget(path);
       } else {
-        widget = new IFrameWidget(path);
-        app.shell.add(widget);
-        app.shell.activateById(widget.id);
+        handleWidget(path);
       }
     },
     isEnabled: () => true,
     label: "Open IFrame",
+  });
+
+  // Restore widgets from previous session
+  restorer.restore(tracker, {
+    command: open_command,
+    args: (widget) => ({path: widget.content.path}),
+    name: (widget) => widget.content.path,
   });
 
   // Add the command to the palette.
@@ -77,4 +93,5 @@ export async function activate(app, launcher, palette) {
   }
 
   console.log("JupyterLab extension jupyterlab_iframe is activated!");
+  return tracker;
 }

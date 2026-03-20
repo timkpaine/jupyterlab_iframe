@@ -22,6 +22,7 @@ export class IFrameWidget extends Widget {
     unique += 1;
 
     let url = path;
+    this.path = url;
     if (!this.local_file && !url.startsWith("http")) {
       // use https, its the twenty first century
       url = `https://${url}`;
