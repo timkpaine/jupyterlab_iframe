@@ -15,13 +15,30 @@ class TestExtension:
         m.web_app.settings["base_url"] = "/test"
         load_jupyter_server_extension(m)
 
-    def test_handler(self):
+    def test_handler_listing(self):
         import tornado.web
 
         app = tornado.web.Application()
         m = MagicMock()
+        m.get_argument.return_value = ""
 
-        h = IFrameHandler(app, m)
+        h = IFrameHandler(app, m, sites=[], allow_any=True)
+        h.current_user = h._jupyter_current_user = "blerg"
+        h._transforms = []
+        h.get()
+
+    def test_handler_local_file(self, tmp_path):
+        import tornado.web
+
+        html_file = tmp_path / "test.html"
+        html_file.write_text("<html><body>test</body></html>")
+        path = f"local://{html_file}"
+
+        app = tornado.web.Application()
+        m = MagicMock()
+        m.get_argument.return_value = path
+
+        h = IFrameHandler(app, m, sites=[{"path": path}], allow_any=True)
         h.current_user = h._jupyter_current_user = "blerg"
         h._transforms = []
         h.get()
