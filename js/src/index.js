@@ -1,4 +1,5 @@
 import {ICommandPalette} from "@jupyterlab/apputils";
+import {ILayoutRestorer} from "@jupyterlab/application";
 import {ILauncher} from "@jupyterlab/launcher";
 
 import {activate} from "./activate";
@@ -8,7 +9,7 @@ const extension = {
   activate,
   autoStart: true,
   id: "jupyterlab_iframe",
-  requires: [ILauncher, ICommandPalette],
+  requires: [ILauncher, ICommandPalette, ILayoutRestorer],
 };
 
 export default extension;
