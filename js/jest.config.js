@@ -1,4 +1,20 @@
-const esModules = ["@jupyterlab", "@jupyter", "@jupyter-widgets", "@microsoft", "lib0", "y-protocols", "internmap", "delaunator", "robust-predicates", "lodash-es", "nanoid"].join("|");
+const esModules = [
+  "@finos",
+  "@jupyter",
+  "@jupyterlab",
+  "@jupyter-widgets",
+  "@lumino",
+  "@microsoft",
+  "@rjsf",
+  "delaunator",
+  "exenv-es6",
+  "internmap",
+  "lib0",
+  "lodash-es",
+  "nanoid",
+  "robust-predicates",
+  "y-protocols",
+].join("|");
 
 module.exports = {
   moduleDirectories: ["node_modules", "src", "tests"],
@@ -15,5 +31,5 @@ module.exports = {
     "^.+\\.jsx?$": "babel-jest",
     ".+\\.(css|styl|less|sass|scss)$": "jest-transform-css",
   },
-  transformIgnorePatterns: [`/node_modules/(?!(${esModules}))`],
+  transformIgnorePatterns: [`/node_modules/.pnpm/(?!(${esModules}))`],
 };

@@ -1,0 +1,12 @@
+# Changes here will be overwritten by Copier
+_commit: 84508d6
+_src_path: https://github.com/python-project-templates/base.git
+add_docs: false
+add_extension: jupyter
+add_wiki: false
+email: t.paine154@gmail.com
+github: timkpaine
+project_description: IFrame widgets for JupyterLab
+project_name: jupyterlab-iframe
+python_version_primary: '3.10'
+team: the jupyterlab-iframe authors
