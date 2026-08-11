@@ -1,37 +1,44 @@
 [build-system]
 requires = [
-    "hatchling>=1.3.1",
+    "hatchling",
+    "hatch-js",
     "jupyterlab>=4,<5",
 ]
 build-backend = "hatchling.build"
 
 [project]
-name = "jupyterlab_iframe"
-description = "IFrame widgets for JupyterLab"
-version = "0.5.0"
-readme = "README.md"
-license = { file = "LICENSE" }
-requires-python = ">=3.7"
+name = "jupyterlab-iframe"
 authors = [
-    { name = "Tim Paine" },
+    {name = "the jupyterlab-iframe authors", email = "t.paine154@gmail.com"},
 ]
+description = "IFrame widgets for JupyterLab"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+version = "0.5.0"
+requires-python = ">=3.10"
 keywords = [
     "Jupyter",
     "JupyterLab",
 ]
+
 classifiers = [
     "Development Status :: 4 - Beta",
     "Framework :: Jupyter",
     "Framework :: Jupyter :: JupyterLab",
+    "Framework :: Jupyter :: JupyterLab :: 4",
+    "Framework :: Jupyter :: JupyterLab :: Extensions",
+    "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
     "Programming Language :: Python",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
+
 dependencies = [
     "jupyterlab>=4,<5",
     "requests>=2.22.0",
@@ -40,67 +47,140 @@ dependencies = [
 
 [project.optional-dependencies]
 develop = [
-    "check-manifest",
+    "build",
+    "bump-my-version",
+    "check-dist",
+    "codespell",
+    "hatch-js",
+    "hatchling",
+    "mdformat",
+    "mdformat-tables>=1",
+    "jupyterlab>=4,<5",
+    "pytest",
+    "pytest-cov",
     "ruff",
-    "pytest",
-    "pytest-cov",
+    "twine",
+    "ty",
+    "uv",
+    "wheel",
 ]
-test = [
-    "pytest",
-    "pytest-cov",
-]
+
+[project.scripts]
 
 [project.urls]
 Repository = "https://github.com/timkpaine/jupyterlab_iframe"
 Homepage = "https://github.com/timkpaine/jupyterlab_iframe"
 
-[tool.check-manifest]
-ignore = [
-	"jupyterlab_iframe/labextension/**",
-	"js/**"
+[tool.bumpversion]
+current_version = "0.5.0"
+commit = true
+tag = true
+commit_args = "-s"
+
+[[tool.bumpversion.files]]
+filename = "jupyterlab_iframe/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "jupyterlab_iframe/_version.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "js/package.json"
+search = '"version": "{current_version}"'
+replace = '"version": "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "binder/requirements.txt"
+search = "jupyterlab_iframe=={current_version}"
+replace = "jupyterlab_iframe=={new_version}"
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "jupyterlab_iframe/tests/integration/",
 ]
+
+[tool.coverage.report]
+exclude_also = [
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod",
+]
+ignore_errors = true
+fail_under = 50
 
 [tool.hatch.build]
 artifacts = [
-    "jupyterlab_iframe/labextension"
+    "jupyterlab_iframe/nbextension",
+    "jupyterlab_iframe/labextension",
+]
+
+[tool.hatch.build.sources]
+src = "/"
+
+[tool.hatch.build.targets.sdist]
+core-metadata-version = "2.4"
+packages = [
+    "jupyterlab_iframe",
+    "js",
+]
+exclude = [
+    "js/dist",
+    "js/node_modules",
+]
+
+[tool.hatch.build.targets.wheel]
+core-metadata-version = "2.4"
+packages = [
+    "jupyterlab_iframe",
+]
+exclude = [
+    "js"
 ]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlab_iframe/labextension" = "share/jupyter/labextensions/jupyterlab_iframe"
-"jupyterlab_iframe/extension/install.json" = "share/jupyter/labextensions/jupyterlab_iframe/install.json"
+"jupyterlab_iframe/labextension" = "share/jupyter/labextensions/jupyterlab-iframe"
+"jupyterlab_iframe/extension/install.json" = "share/jupyter/labextensions/jupyterlab-iframe/install.json"
 "jupyterlab_iframe/extension/jupyterlab_iframe.json" = "etc/jupyter/jupyter_server_config.d/jupyterlab_iframe.json"
-"jupyterlab_iframe/extension/notebook_commands" = "share/jupyter/notebook"
 
-[tool.hatch.build.targets.sdist]
-exclude = [
-    ".github",
-    "binder",
-    "docs",
-]
-
-[tool.hatch.build.hooks.jupyter-builder]
-build-function = "hatch_jupyter_builder.npm_builder"
-ensured-targets = [
-    "jupyterlab_iframe/labextension/package.json",
-]
-skip-if-exists = [
-    "jupyterlab_iframe/labextension/package.json",
-]
-dependencies = [
-    "hatch-jupyter-builder>=0.5.0",
-]
-
-[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+[tool.hatch.build.hooks.hatch-js]
 path = "js"
 build_cmd = "build"
+tool = "pnpm"
+targets = [
+    "jupyterlab_iframe/nbextension/static/notebook.js",
+    "jupyterlab_iframe/labextension/package.json",
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "-vvv",
+    "--junitxml=junit.xml",
+]
+testpaths = "jupyterlab_iframe/tests"
 
 [tool.ruff]
-line-length = 120
+line-length = 150
+
+[tool.ruff.lint]
+extend-select = [
+    "I",
+]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
 default-section = "third-party"
-known-first-party = ["jupyterlab_iframe"]
+known-first-party = [
+    "jupyterlab_iframe",
+]
 section-order = [
     "future",
     "standard-library",
@@ -110,4 +190,7 @@ section-order = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401", "F403"]
+"__init__.py" = [
+    "F401",
+    "F403",
+]

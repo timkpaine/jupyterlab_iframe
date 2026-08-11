@@ -2,11 +2,10 @@
 
 Open a site in a widget, or add a set of "quicklinks".
 
-[![Build Status](https://github.com/timkpaine/jupyterlab_iframe/workflows/Build%20Status/badge.svg?branch=main)](https://github.com/timkpaine/jupyterlab_iframe/actions?query=workflow%3A%22Build+Status%22)
+[![Build Status](https://github.com/timkpaine/jupyterlab_iframe/actions/workflows/build.yaml/badge.svg?branch=main&event=push)](https://github.com/timkpaine/jupyterlab_iframe/actions/workflows/build.yaml)
 [![codecov](https://codecov.io/gh/timkpaine/jupyterlab_iframe/branch/main/graph/badge.svg)](https://codecov.io/gh/timkpaine/jupyterlab_iframe)
-[![PyPI](https://img.shields.io/pypi/l/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
-[![PyPI](https://img.shields.io/pypi/v/jupyterlab_iframe.svg)](https://pypi.python.org/pypi/jupyterlab_iframe)
-[![npm](https://img.shields.io/npm/v/jupyterlab_iframe.svg)](https://www.npmjs.com/package/jupyterlab_iframe)
+[![License](https://img.shields.io/github/license/timkpaine/jupyterlab_iframe)](https://github.com/timkpaine/jupyterlab_iframe)
+[![PyPI](https://img.shields.io/pypi/v/jupyterlab-iframe.svg)](https://pypi.python.org/pypi/jupyterlab-iframe)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/timkpaine/jupyterlab_iframe/main?urlpath=lab)
 
 ![](https://raw.githubusercontent.com/timkpaine/jupyterlab_iframe/main/docs/example1.gif)
@@ -23,12 +22,12 @@ jupyter serverextension enable --py jupyterlab_iframe
 
 Sites are configured as a list of objects. Each entry supports the following fields:
 
-| Field        | Type    | Description                                                      |
-|--------------|---------|------------------------------------------------------------------|
-| `path`       | string  | URL (http/https) or `local://` path to an HTML file on the filesystem. |
-| `openOnLoad` | bool    | Open this site automatically the first time JupyterLab loads. Defaults to `False`. |
-| `launcher`   | bool    | Show a launcher tile for this site. Defaults to `False`. |
-| `customIcon` | string  | URL to a custom icon for the launcher tile (optional). If omitted, the site's favicon is used. |
+| Field        | Type   | Description                                                                                    |
+| ------------ | ------ | ---------------------------------------------------------------------------------------------- |
+| `path`       | string | URL (http/https) or `local://` path to an HTML file on the filesystem.                         |
+| `openOnLoad` | bool   | Open this site automatically the first time JupyterLab loads. Defaults to `False`.             |
+| `launcher`   | bool   | Show a launcher tile for this site. Defaults to `False`.                                       |
+| `customIcon` | string | URL to a custom icon for the launcher tile (optional). If omitted, the site's favicon is used. |
 
 Add the following to `jupyter_notebook_config.py`:
 
@@ -64,14 +63,11 @@ c.JupyterLabIFrame.allow_any_local = False
 ~~- If Jlab is served over SSL, so must the sites (http/https must match)~~
 ~~- If the underlying site enforces same-origin, then we cannot navigate to them (e.g. google)~~
 
-
 ## Similar Packages
 
 - [Jupyterlab-html](https://github.com/mflevine/jupyterlab_html) displays local html files as websites in an iframe
 - [Jupyterlab-sandbox](https://github.com/canavandl/jupyterlab_sandbox)
 - [Main JLab Issue](https://github.com/jupyterlab/jupyterlab/issues/2369)
-
-
 
 ## Configuring Binder with a landing page
 
@@ -92,3 +88,5 @@ mkdir -p ~/.jupyter
 echo -e $config > ~/.jupyter/jupyter_notebook_config.py
 ```
 
+> [!NOTE]
+> This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).

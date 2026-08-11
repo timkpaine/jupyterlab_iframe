@@ -56,9 +56,7 @@ def load_jupyter_server_extension(nb_server_app):
         s.setdefault("customIcon", "")
 
     # remove local:// entries whose files don't exist on disk
-    sites = [
-        s for s in sites if (not s["path"].startswith("local://") or os.path.exists(s["path"].replace("local://", "")))
-    ]
+    sites = [s for s in sites if (not s["path"].startswith("local://") or os.path.exists(s["path"].replace("local://", "")))]
 
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
@@ -68,8 +66,7 @@ def load_jupyter_server_extension(nb_server_app):
 
     if allow_any:
         nb_server_app.log.warning(
-            "WARNING: allowing any local file to be served as html in an iframe"
-            " (via `JupyterLabIFrame.allow_any_local` configuration)"
+            "WARNING: allowing any local file to be served as html in an iframe (via `JupyterLabIFrame.allow_any_local` configuration)"
         )
 
     web_app.add_handlers(
