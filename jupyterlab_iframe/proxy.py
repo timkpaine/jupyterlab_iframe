@@ -1,7 +1,7 @@
 import tornado.gen
+import tornado.httpclient
 import tornado.web
 import tornado.websocket
-import tornado.httpclient
 from jupyter_server.base.handlers import JupyterHandler
 from tornado_proxy_handlers import (
     ProxyHandler as TProxyHandler,
@@ -11,7 +11,7 @@ from tornado_proxy_handlers import (
 
 class ProxyHandler(JupyterHandler, TProxyHandler):
     def initialize(self, **kwargs):
-        super(ProxyHandler, self).initialize(**kwargs)
+        super().initialize(**kwargs)
 
     @tornado.web.authenticated
     @tornado.gen.coroutine
@@ -25,4 +25,4 @@ class ProxyWSHandler(TProxyWSHandler):
     @tornado.gen.coroutine
     def open(self, *args):
         path = self.get_argument("path")
-        yield super(ProxyWSHandler, self).open(url=path)
+        yield super().open(url=path)
