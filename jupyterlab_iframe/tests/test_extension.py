@@ -1,10 +1,11 @@
 # for Coverage
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from jupyterlab_iframe.extension import (
-    load_jupyter_server_extension,
     IFrameHandler,
     ProxyHandler,
-)  # noqa: F401
+    load_jupyter_server_extension,
+)
 
 
 class TestExtension:

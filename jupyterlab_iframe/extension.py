@@ -30,7 +30,7 @@ class IFrameHandler(JupyterHandler):
             return
         elif path:
             # path provided but not allowed
-            raise tornado.web.HTTPError(403, "Site not allowed: {}".format(path))
+            raise tornado.web.HTTPError(403, f"Site not allowed: {path}")
 
         # no path — return the site listing
         self.set_header("Content-Type", "application/json")
@@ -63,7 +63,7 @@ def load_jupyter_server_extension(nb_server_app):
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
 
-    nb_server_app.log.info("Installing jupyterlab_iframe handler on path %s" % url_path_join(base_url, "iframes"))
+    nb_server_app.log.info(f"Installing jupyterlab_iframe handler on path {url_path_join(base_url, 'iframes')}")
     nb_server_app.log.info("Installing sites: %s" % [s["path"] for s in sites])
 
     if allow_any:
