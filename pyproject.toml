@@ -76,6 +76,10 @@ current_version = "0.5.0"
 commit = true
 tag = true
 commit_args = "-s"
+pre_commit_hooks = [
+    "pnpm --dir js install --lockfile-only --no-frozen-lockfile --ignore-scripts",
+    "git add js/pnpm-lock.yaml",
+]
 
 [[tool.bumpversion.files]]
 filename = "jupyterlab_iframe/__init__.py"
