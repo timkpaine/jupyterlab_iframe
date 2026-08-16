@@ -2,8 +2,15 @@ import {ICommandPalette} from "@jupyterlab/apputils";
 import {ILayoutRestorer} from "@jupyterlab/application";
 import {ILauncher} from "@jupyterlab/launcher";
 
+<<<<<<< before updating
 import {activate} from "./activate";
 import "../style/index.css";
+=======
+async function activate(_app) {
+  // oxlint-disable-next-line no-console
+  console.log("JupyterLab extension jupyterlab-iframe is activated!");
+}
+>>>>>>> after updating
 
 const extension = {
   activate,
